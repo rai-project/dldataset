@@ -5,7 +5,6 @@ import (
 
 	context "golang.org/x/net/context"
 
-	"github.com/k0kubun/pp"
 	"github.com/rai-project/dldataset"
 	"github.com/stretchr/testify/assert"
 )
@@ -13,17 +12,27 @@ import (
 func TestDownloadCIFAR100(t *testing.T) {
 	ctx := context.Background()
 
-	cifar10, err := dldataset.Get("vision", "cifar100")
+	cifar100, err := dldataset.Get("vision", "cifar100")
 	assert.NoError(t, err)
-	assert.NotEmpty(t, cifar10)
+	assert.NotEmpty(t, cifar100)
 
-	err = cifar10.Download(ctx)
+	defer cifar100.Close()
+
+	err = cifar100.Download(ctx)
 	assert.NoError(t, err)
 
-	lbl, err := cifar10.Get(ctx, "1")
+	fileList, err := cifar100.List(ctx)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, fileList)
+
+	lbl, err := cifar100.Get(ctx, "train/1")
 	assert.NoError(t, err)
 	assert.NotEmpty(t, lbl)
 
-	pp.Println(lbl)
+	lbl, err = cifar100.Get(ctx, "test/1")
+	assert.NoError(t, err)
+	assert.NotEmpty(t, lbl)
+
+	// pp.Println(lbl)
 
 }

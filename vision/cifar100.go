@@ -19,6 +19,8 @@ import (
 	context "golang.org/x/net/context"
 )
 
+var cifar100 *CIFAR100
+
 type CIFAR100 struct {
 	base
 	url                  string
@@ -73,7 +75,7 @@ func (d *CIFAR100) CanonicalName() string {
 }
 
 func (d *CIFAR100) New(ctx context.Context) (dldataset.Dataset, error) {
-	return &CIFAR100{}, nil
+	return cifar100, nil
 }
 
 func (d *CIFAR100) Download(ctx context.Context) error {
@@ -158,7 +160,7 @@ func (d *CIFAR100) List(ctx context.Context) ([]string, error) {
 		return nil, err
 	}
 	keys := []string{}
-	for key, _ := range d.data {
+	for key := range d.data {
 		keys = append(keys, key)
 	}
 	return keys, nil
@@ -190,23 +192,46 @@ func (d *CIFAR100) readData(ctx context.Context) error {
 		return nil
 	}
 
-	ii := 0
 	workingDir := d.workingDir()
 	data := map[string]CIFAR100LabeledImage{}
-	for fileName := range d.trainFileNameList {
+
+	read := func(offset int, class, fileName string) (int, error) {
+		idx := offset
 		filePath := filepath.Join(workingDir, fileName)
 		f, err := os.Open(filePath)
 		if err != nil {
-			return errors.Wrapf(err, "failed to open %s while performing md5 checksum", filePath)
+			return idx, errors.Wrapf(err, "failed to open %s while performing md5 checksum", filePath)
 		}
 		defer f.Close()
 
-		entry, err := d.readEntry(ctx, f)
-		if err != nil {
-			return errors.Wrapf(err, "failed reading entry for %s", filePath)
+		for {
+			entry, err := d.readEntry(ctx, f)
+			if err == io.EOF {
+				return 0, nil
+			}
+			if err != nil {
+				return idx, errors.Wrapf(err, "failed reading entry for %s", filePath)
+			}
+			data[class+"/"+strconv.Itoa(idx)] = *entry
+			idx++
 		}
-		data[strconv.Itoa(ii)] = *entry
-		ii++
+		return idx, nil
+	}
+	idx := 0
+	for fileName := range d.trainFileNameList {
+		newIdx, err := read(idx, "train", fileName)
+		if err != nil {
+			return err
+		}
+		idx = newIdx
+	}
+	idx = 0
+	for fileName := range d.trainFileNameList {
+		newIdx, err := read(idx, "test", fileName)
+		if err != nil {
+			return err
+		}
+		idx = newIdx
 	}
 
 	d.data = data
@@ -219,8 +244,11 @@ func (d *CIFAR100) readEntry(ctx context.Context, reader io.Reader) (*CIFAR100La
 	coarseLabelByteSize := int64(d.coarseLabelByteSize)
 	coarseLabelBytesReader := io.LimitReader(reader, coarseLabelByteSize)
 	err := binary.Read(coarseLabelBytesReader, binary.LittleEndian, &coarseLabelIdx)
+	if err == io.EOF {
+		return nil, err
+	}
 	if err != nil {
-		return nil, errors.New("unable to read fine label")
+		return nil, errors.Wrap(err, "unable to read fine label")
 	}
 	if int(coarseLabelIdx) >= len(d.coarseLabels) {
 		return nil, errors.Errorf("the coarse label %v is out of range of %v", coarseLabelIdx, len(d.coarseLabels))
@@ -230,8 +258,11 @@ func (d *CIFAR100) readEntry(ctx context.Context, reader io.Reader) (*CIFAR100La
 	fineLabelByteSize := int64(d.fineLabelByteSize)
 	fineLabelBytesReader := io.LimitReader(reader, fineLabelByteSize)
 	err = binary.Read(fineLabelBytesReader, binary.LittleEndian, &fineLabelIdx)
+	if err == io.EOF {
+		return nil, err
+	}
 	if err != nil {
-		return nil, errors.New("unable to read fine label")
+		return nil, errors.Wrap(err, "unable to read fine label")
 	}
 	if int(fineLabelIdx) >= len(d.fineLabels) {
 		return nil, errors.Errorf("the fine label %v is out of range of %v", fineLabelIdx, len(d.fineLabels))
@@ -241,8 +272,11 @@ func (d *CIFAR100) readEntry(ctx context.Context, reader io.Reader) (*CIFAR100La
 	pixelBytesReader := io.LimitReader(reader, pixelByteSize)
 	pixelBytes := make([]byte, pixelByteSize)
 	err = binary.Read(pixelBytesReader, binary.LittleEndian, &pixelBytes)
+	if err == io.EOF {
+		return nil, err
+	}
 	if err != nil {
-		return nil, errors.New("unable to read label")
+		return nil, errors.Wrap(err, "unable to read label")
 	}
 
 	return &CIFAR100LabeledImage{
@@ -306,7 +340,7 @@ func (d *CIFAR100) workingDir() string {
 
 func init() {
 	config.AfterInit(func() {
-		dldataset.Register(&CIFAR100{
+		cifar100 = &CIFAR100{
 			base: base{
 				ctx:            context.Background(),
 				baseWorkingDir: filepath.Join(dldataset.Config.WorkingDirectory, "dldataset"),
@@ -328,6 +362,7 @@ func init() {
 			coarseLabelByteSize:  1,
 			pixelByteSize:        3072,
 			isDownloaded:         false,
-		})
+		}
+		dldataset.Register(cifar100)
 	})
 }
