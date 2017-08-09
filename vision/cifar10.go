@@ -2,6 +2,7 @@ package vision
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/binary"
 	"io"
 	"os"
@@ -31,8 +32,21 @@ type CIFAR10 struct {
 	labelByteSize       int
 	pixelByteSize       int
 	imageDimensions     []int
-	data                map[string]LabeledImage
+	data                map[string]CIFAR10LabeledImage
 	isDownloaded        bool
+}
+
+type CIFAR10LabeledImage struct {
+	label string
+	data  []byte
+}
+
+func (l CIFAR10LabeledImage) Label() string {
+	return l.label
+}
+
+func (l CIFAR10LabeledImage) Data() (io.Reader, error) {
+	return bytes.NewBuffer(l.data), nil
 }
 
 func (*CIFAR10) Name() string {
@@ -156,7 +170,7 @@ func (d *CIFAR10) readData(ctx context.Context) error {
 
 	ii := 0
 	workingDir := d.workingDir()
-	data := map[string]LabeledImage{}
+	data := map[string]CIFAR10LabeledImage{}
 	for fileName := range d.trainFileNameList {
 		filePath := filepath.Join(workingDir, fileName)
 		f, err := os.Open(filePath)
@@ -178,7 +192,7 @@ func (d *CIFAR10) readData(ctx context.Context) error {
 	return nil
 }
 
-func (d *CIFAR10) readEntry(ctx context.Context, reader io.Reader) (*LabeledImage, error) {
+func (d *CIFAR10) readEntry(ctx context.Context, reader io.Reader) (*CIFAR10LabeledImage, error) {
 	var labelIdx int8
 	labelByteSize := int64(d.labelByteSize)
 	labelBytesReader := io.LimitReader(reader, labelByteSize)
@@ -198,7 +212,7 @@ func (d *CIFAR10) readEntry(ctx context.Context, reader io.Reader) (*LabeledImag
 		return nil, errors.New("unable to read label")
 	}
 
-	return &LabeledImage{
+	return &CIFAR10LabeledImage{
 		label: d.labels[labelIdx],
 		data:  pixelBytes,
 	}, nil
