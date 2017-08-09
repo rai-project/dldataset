@@ -29,7 +29,7 @@ func (md5sumTy) CheckFile(path string, expected string) (bool, error) {
 		return false, errors.Wrapf(err, "failed to open %s while performing md5 checksum", path)
 	}
 	defer f.Close()
-	ok, err := md5sum.Check(f, md5)
+	ok, err := md5sum.Check(f, expected)
 	if err != nil {
 		return false, errors.Wrapf(err, "unable to perform md5sum on %s", path)
 	}

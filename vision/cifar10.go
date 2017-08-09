@@ -2,8 +2,8 @@ package vision
 
 import (
 	"bufio"
+	"encoding/binary"
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -179,23 +179,21 @@ func (d *CIFAR10) readData(ctx context.Context) error {
 }
 
 func (d *CIFAR10) readEntry(ctx context.Context, reader io.Reader) (*LabeledImage, error) {
+	var labelIdx int8
 	labelByteSize := int64(d.labelByteSize)
-	labelBytes, err := ioutil.ReadAll(io.LimitReader(reader, labelByteSize))
+	labelBytesReader := io.LimitReader(reader, labelByteSize)
+	err := binary.Read(labelBytesReader, binary.LittleEndian, &labelIdx)
 	if err != nil {
 		return nil, errors.New("unable to read label")
 	}
-
-	labelIdx, err := strconv.Atoi(string(labelBytes))
-	if err != nil {
-		return nil, errors.Wrapf(err, "unable to read %s", string(labelBytes))
-	}
-
-	if labelIdx >= len(d.labels) {
+	if int(labelIdx) >= len(d.labels) {
 		return nil, errors.Errorf("the label %v is out of range of %v", labelIdx, len(d.labels))
 	}
 
 	pixelByteSize := int64(d.pixelByteSize)
-	pixelBytes, err := ioutil.ReadAll(io.LimitReader(reader, pixelByteSize))
+	pixelBytesReader := io.LimitReader(reader, pixelByteSize)
+	pixelBytes := make([]byte, pixelByteSize)
+	err = binary.Read(pixelBytesReader, binary.LittleEndian, &pixelBytes)
 	if err != nil {
 		return nil, errors.New("unable to read label")
 	}
