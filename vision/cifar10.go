@@ -16,6 +16,7 @@ import (
 	"github.com/rai-project/config"
 	"github.com/rai-project/dldataset"
 	"github.com/rai-project/downloadmanager"
+	"github.com/rai-project/image"
 	context "golang.org/x/net/context"
 )
 
@@ -40,7 +41,7 @@ type CIFAR10 struct {
 
 type CIFAR10LabeledImage struct {
 	label string
-	data  []byte
+	data  image.RGBImage
 }
 
 func (l CIFAR10LabeledImage) Label() string {
@@ -243,9 +244,20 @@ func (d *CIFAR10) readEntry(ctx context.Context, reader io.Reader) (*CIFAR10Labe
 		return nil, errors.New("unable to read label")
 	}
 
+	img := image.NewRGBImage(image.Rect(0, 0, d.imageDimensions[0], d.imageDimensions[1]))
+	var idx int
+	for y := 0; y < d.imageDimensions[0]; y++ {
+		for x := 0; x < d.imageDimensions[1]; x++ {
+			for c := 0; c < d.imageDimensions[2]; c++ {
+				img.Pix[ii] = float32(pixelBytes[idx])
+				idx++
+			}
+		}
+	}
+
 	return &CIFAR10LabeledImage{
 		label: d.labels[labelIdx],
-		data:  pixelBytes,
+		data:  img,
 	}, nil
 }
 

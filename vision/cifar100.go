@@ -44,7 +44,7 @@ type CIFAR100 struct {
 type CIFAR100LabeledImage struct {
 	coarseLabel string
 	fineLabel   string
-	data        []byte
+	data        image.RGBImage
 }
 
 func (l CIFAR100LabeledImage) CoarseLabel() string {
@@ -279,10 +279,21 @@ func (d *CIFAR100) readEntry(ctx context.Context, reader io.Reader) (*CIFAR100La
 		return nil, errors.Wrap(err, "unable to read label")
 	}
 
+	img := image.NewRGBImage(image.Rect(0, 0, d.imageDimensions[0], d.imageDimensions[1]))
+	var idx int
+	for y := 0; y < d.imageDimensions[0]; y++ {
+		for x := 0; x < d.imageDimensions[1]; x++ {
+			for c := 0; c < d.imageDimensions[2]; c++ {
+				img.Pix[ii] = float32(pixelBytes[idx])
+				idx++
+			}
+		}
+	}
+
 	return &CIFAR100LabeledImage{
 		coarseLabel: d.coarseLabels[coarseLabelIdx],
 		fineLabel:   d.fineLabels[fineLabelIdx],
-		data:        pixelBytes,
+		data:        img,
 	}, nil
 }
 

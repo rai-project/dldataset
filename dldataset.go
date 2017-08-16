@@ -8,7 +8,7 @@ import (
 
 type LabeledData interface {
 	Label() string
-	Data() (io.Reader, error)
+	Data() (interface{}, error)
 }
 
 type Dataset interface {
