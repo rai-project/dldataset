@@ -57,7 +57,8 @@ func (d *ILSVRC2012Validation) List(ctx context.Context) ([]string, error) {
 }
 
 func (d *ILSVRC2012Validation) Get(ctx context.Context, name string) (dldataset.LabeledData, error) {
-
+	panic("TODO ILSVRC2012Validation/GET")
+	return nil, nil
 }
 
 func (d *ILSVRC2012Validation) Close() error {
