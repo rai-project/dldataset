@@ -2,6 +2,7 @@ package vision
 
 import (
 	"net/http"
+	"os"
 	"path"
 	"path/filepath"
 	"strings"
@@ -9,6 +10,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rai-project/config"
 	"github.com/rai-project/dldataset"
+	"github.com/rai-project/downloadmanager"
 	"github.com/rai-project/image"
 	"github.com/rai-project/image/types"
 	context "golang.org/x/net/context"
@@ -41,6 +43,12 @@ func (d *ILSVRC2012Validation) New(ctx context.Context) (dldataset.Dataset, erro
 	return iLSVRC2012Validation, nil
 }
 
+func (d *ILSVRC2012Validation) workingDir() string {
+	category := strings.ToLower(d.Category())
+	name := strings.ToLower(d.Name())
+	return filepath.Join(d.baseWorkingDir, category, name)
+}
+
 func (d *ILSVRC2012Validation) Name() string {
 	return "ilsvrc2012_validation"
 }
@@ -60,7 +68,7 @@ func (d *ILSVRC2012Validation) List(ctx context.Context) ([]string, error) {
 	return d.filePaths, nil
 }
 
-func (d *ILSVRC2012Validation) Get(ctx context.Context, name string) (dldataset.LabeledData, error) {
+func (d *ILSVRC2012Validation) GetWithoutDownloadManager(ctx context.Context, name string) (dldataset.LabeledData, error) {
 	fileURL, ok := d.fileURLs[name]
 	if !ok {
 		return nil, errors.Errorf("the file path %v for the dataset %v was not found", name, d.CanonicalName())
@@ -72,6 +80,43 @@ func (d *ILSVRC2012Validation) Get(ctx context.Context, name string) (dldataset.
 	defer req.Body.Close()
 
 	img, err := image.Read(req.Body)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to read image from %v", fileURL)
+	}
+
+	if _, ok := img.(*types.RGBImage); !ok {
+		return nil, errors.Wrapf(err, "failed to read rgb image from %v", fileURL)
+	}
+
+	label := path.Dir(name)
+
+	return &ILSVRC2012ValidationLabeledImage{
+		data:  img.(*types.RGBImage),
+		label: label,
+	}, nil
+}
+
+func (d *ILSVRC2012Validation) Get(ctx context.Context, name string) (dldataset.LabeledData, error) {
+	fileURL, ok := d.fileURLs[name]
+	if !ok {
+		return nil, errors.Errorf("the file path %v for the dataset %v was not found", name, d.CanonicalName())
+	}
+
+	workingDir := d.workingDir()
+	downloadedFileName := filepath.Join(workingDir, name)
+	downloadedFileName, err := downloadmanager.DownloadFile(ctx, fileURL, downloadedFileName)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to download %v", fileURL)
+	}
+
+	f, err := os.Open(downloadedFileName)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to open %v", downloadedFileName)
+	}
+
+	defer f.Close()
+
+	img, err := image.Read(f)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to read image from %v", fileURL)
 	}

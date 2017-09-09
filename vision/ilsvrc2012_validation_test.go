@@ -26,12 +26,14 @@ func TestILSVRC2012Validation(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, fileList)
 
-	lbl, err := ilsvrc.Get(ctx, fileList[0])
-	assert.NoError(t, err)
-	assert.NotEmpty(t, lbl)
+	for ii := 0; ii < 10; ii++ {
+		lbl, err := ilsvrc.Get(ctx, fileList[ii])
+		assert.NoError(t, err)
+		assert.NotEmpty(t, lbl)
 
-	data, err := lbl.Data()
-	assert.NoError(t, err)
-	assert.NotEmpty(t, data)
-	assert.IsType(t, &types.RGBImage{}, data)
+		data, err := lbl.Data()
+		assert.NoError(t, err)
+		assert.NotEmpty(t, data)
+		assert.IsType(t, &types.RGBImage{}, data)
+	}
 }
