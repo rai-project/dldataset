@@ -85,7 +85,7 @@ func (d *CIFAR100) Download(ctx context.Context) error {
 	}
 	workingDir := d.workingDir()
 	downloadedFileName := filepath.Join(workingDir, d.fileName)
-	downloadedFileName, err := downloadmanager.DownloadFile(ctx, d.url, downloadedFileName)
+	downloadedFileName, err := downloadmanager.DownloadFile(d.url, downloadedFileName)
 	if err != nil {
 		return err
 	}
