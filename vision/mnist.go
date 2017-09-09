@@ -1,8 +1,7 @@
 package vision
 
 import (
-	"bytes"
-	"io"
+	"image"
 	"path"
 	"strconv"
 	"strings"
@@ -12,6 +11,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rai-project/config"
 	"github.com/rai-project/dldataset"
+	"github.com/rai-project/image/types"
 	mnistLoader "github.com/unixpickle/mnist"
 )
 
@@ -25,15 +25,15 @@ var mnist *MNIST
 
 type MNISTLabeledImage struct {
 	label string
-	data  []byte
+	data  *types.RGBImage
 }
 
 func (l MNISTLabeledImage) Label() string {
 	return l.label
 }
 
-func (l MNISTLabeledImage) Data() (io.Reader, error) {
-	return bytes.NewBuffer(l.data), nil
+func (l MNISTLabeledImage) Data() (interface{}, error) {
+	return l.data, nil
 }
 
 func (*MNIST) Name() string {
@@ -86,17 +86,24 @@ func (d *MNIST) Get(ctx context.Context, name string) (dldataset.LabeledData, er
 	}
 
 	elem := dataset.Samples[idx]
-	data := make([]byte, len(elem.Intensities))
+
+	img := types.NewRGBImage(image.Rect(0, 0, dataset.Width, dataset.Height))
+	data := img.Pix
+
 	for ii, intensity := range elem.Intensities {
 		if intensity == 1 {
-			data[ii] = byte(1)
+			data[3*ii+0] = byte(1)
+			data[3*ii+1] = byte(1)
+			data[3*ii+2] = byte(1)
 		} else {
-			data[ii] = byte(0)
+			data[3*ii+0] = byte(0)
+			data[3*ii+1] = byte(0)
+			data[3*ii+2] = byte(0)
 		}
 	}
 
 	return &MNISTLabeledImage{
-		data:  data,
+		data:  img,
 		label: strconv.Itoa(elem.Label),
 	}, nil
 }

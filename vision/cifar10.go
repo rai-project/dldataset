@@ -2,8 +2,8 @@ package vision
 
 import (
 	"bufio"
-	"bytes"
 	"encoding/binary"
+	"image"
 	"io"
 	"os"
 	"path"
@@ -16,7 +16,7 @@ import (
 	"github.com/rai-project/config"
 	"github.com/rai-project/dldataset"
 	"github.com/rai-project/downloadmanager"
-	"github.com/rai-project/image"
+	"github.com/rai-project/image/types"
 	context "golang.org/x/net/context"
 )
 
@@ -41,15 +41,15 @@ type CIFAR10 struct {
 
 type CIFAR10LabeledImage struct {
 	label string
-	data  image.RGBImage
+	data  *types.RGBImage
 }
 
 func (l CIFAR10LabeledImage) Label() string {
 	return l.label
 }
 
-func (l CIFAR10LabeledImage) Data() (io.Reader, error) {
-	return bytes.NewBuffer(l.data), nil
+func (l CIFAR10LabeledImage) Data() (interface{}, error) {
+	return l.data, nil
 }
 
 func (*CIFAR10) Name() string {
@@ -235,24 +235,15 @@ func (d *CIFAR10) readEntry(ctx context.Context, reader io.Reader) (*CIFAR10Labe
 
 	pixelByteSize := int64(d.pixelByteSize)
 	pixelBytesReader := io.LimitReader(reader, pixelByteSize)
-	pixelBytes := make([]byte, pixelByteSize)
-	err = binary.Read(pixelBytesReader, binary.LittleEndian, &pixelBytes)
+
+	img := types.NewRGBImage(image.Rect(0, 0, d.imageDimensions[0], d.imageDimensions[1]))
+
+	err = binary.Read(pixelBytesReader, binary.LittleEndian, img.Pix)
 	if err == io.EOF {
 		return nil, err
 	}
 	if err != nil {
 		return nil, errors.New("unable to read label")
-	}
-
-	img := image.NewRGBImage(image.Rect(0, 0, d.imageDimensions[0], d.imageDimensions[1]))
-	var idx int
-	for y := 0; y < d.imageDimensions[0]; y++ {
-		for x := 0; x < d.imageDimensions[1]; x++ {
-			for c := 0; c < d.imageDimensions[2]; c++ {
-				img.Pix[ii] = float32(pixelBytes[idx])
-				idx++
-			}
-		}
 	}
 
 	return &CIFAR10LabeledImage{
