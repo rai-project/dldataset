@@ -1,12 +1,15 @@
 package vision
 
 import (
+	"net/http"
 	"path"
 	"path/filepath"
 	"strings"
 
+	"github.com/pkg/errors"
 	"github.com/rai-project/config"
 	"github.com/rai-project/dldataset"
+	"github.com/rai-project/image"
 	"github.com/rai-project/image/types"
 	context "golang.org/x/net/context"
 )
@@ -17,6 +20,7 @@ type ILSVRC2012Validation struct {
 	base
 	baseURL   string
 	filePaths []string
+	fileURLs  map[string]string
 	data      map[string]ILSVRC2012ValidationLabeledImage
 }
 
@@ -57,8 +61,31 @@ func (d *ILSVRC2012Validation) List(ctx context.Context) ([]string, error) {
 }
 
 func (d *ILSVRC2012Validation) Get(ctx context.Context, name string) (dldataset.LabeledData, error) {
-	panic("TODO ILSVRC2012Validation/GET")
-	return nil, nil
+	fileURL, ok := d.fileURLs[name]
+	if !ok {
+		return nil, errors.Errorf("the file path %v for the dataset %v was not found", name, d.CanonicalName())
+	}
+	req, err := http.Get(fileURL)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to perform http get request to %v", fileURL)
+	}
+	defer req.Body.Close()
+
+	img, err := image.Read(req.Body)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to read image from %v", fileURL)
+	}
+
+	if _, ok := img.(*types.RGBImage); !ok {
+		return nil, errors.Wrapf(err, "failed to read rgb image from %v", fileURL)
+	}
+
+	label := path.Dir(name)
+
+	return &ILSVRC2012ValidationLabeledImage{
+		data:  img.(*types.RGBImage),
+		label: label,
+	}, nil
 }
 
 func (d *ILSVRC2012Validation) Close() error {
@@ -66,15 +93,24 @@ func (d *ILSVRC2012Validation) Close() error {
 }
 
 func init() {
+	const fileListPath = "/vision/support/ilsvrc2012_validation_file_list.txt"
+	const baseURL = "http://store.carml.org.s3.amazonaws.com/datasets/ilsvrc2012_validation/"
 	config.AfterInit(func() {
-		const fileListPath = "/vision/support/ilsvrc2012_validation_file_list.txt"
+
 		filePaths := strings.Split(_escFSMustString(false, fileListPath), "\n")
+
+		fileURLs := map[string]string{}
+		for _, p := range filePaths {
+			fileURLs[p] = baseURL + p
+		}
+
 		iLSVRC2012Validation = &ILSVRC2012Validation{
 			base: base{
 				ctx:            context.Background(),
 				baseWorkingDir: filepath.Join(dldataset.Config.WorkingDirectory, "dldataset"),
 			},
-			baseURL:   "http://store.carml.org.s3.amazonaws.com/datasets/ilsvrc2012_validation/",
+			baseURL:   baseURL,
+			fileURLs:  fileURLs,
 			filePaths: filePaths,
 		}
 		dldataset.Register(iLSVRC2012Validation)
