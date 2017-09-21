@@ -17,6 +17,7 @@ import (
 	"github.com/rai-project/dldataset"
 	"github.com/rai-project/downloadmanager"
 	"github.com/rai-project/image/types"
+	"github.com/rai-project/utils"
 	context "golang.org/x/net/context"
 )
 
@@ -89,7 +90,7 @@ func (d *CIFAR100) Download(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	ok, err := md5sum.CheckFile(downloadedFileName, d.md5sum)
+	ok, err := utils.MD5Sum.CheckFile(downloadedFileName, d.md5sum)
 	if err != nil {
 		return errors.Wrapf(err, "unable to perform md5sum on %s", downloadedFileName)
 	}
@@ -127,7 +128,7 @@ func (d *CIFAR100) move(ctx context.Context) error {
 		if err := os.Rename(filePath, newPath); err != nil {
 			return errors.Wrapf(err, "cannot move the file %s to %s", filePath, newPath)
 		}
-		ok, err := md5sum.CheckFile(newPath, md5)
+		ok, err := utils.MD5Sum.CheckFile(newPath, md5)
 		if err != nil {
 			return err
 		}

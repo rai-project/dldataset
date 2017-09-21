@@ -6,6 +6,7 @@ import:
   version: ~2.3.0
 - package: github.com/pkg/errors
   version: ~0.8.0
+- package: github.com/rai-project/utils
 - package: github.com/rai-project/config
 - package: github.com/rai-project/downloadmanager
 - package: github.com/rai-project/logger
