@@ -104,7 +104,7 @@ func (d *ILSVRC2012Validation) Get(ctx context.Context, name string) (dldataset.
 
 	workingDir := d.workingDir()
 	downloadedFileName := filepath.Join(workingDir, name)
-	downloadedFileName, err := downloadmanager.DownloadFile(ctx, fileURL, downloadedFileName)
+	downloadedFileName, err := downloadmanager.DownloadFile(fileURL, downloadedFileName, downloadmanager.Context(ctx))
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to download %v", fileURL)
 	}
