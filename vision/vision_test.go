@@ -7,6 +7,7 @@ import (
 	"github.com/rai-project/config"
 )
 
+// TestMain ...
 func TestMain(m *testing.M) {
 	config.Init(
 		config.AppName("carml"),

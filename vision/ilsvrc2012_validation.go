@@ -18,6 +18,7 @@ import (
 
 var iLSVRC2012Validation *ILSVRC2012Validation
 
+// ILSVRC2012Validation ...
 type ILSVRC2012Validation struct {
 	base
 	baseURL   string
@@ -26,19 +27,23 @@ type ILSVRC2012Validation struct {
 	data      map[string]ILSVRC2012ValidationLabeledImage
 }
 
+// ILSVRC2012ValidationLabeledImage ...
 type ILSVRC2012ValidationLabeledImage struct {
 	label string
 	data  *types.RGBImage
 }
 
+// Label ...
 func (l ILSVRC2012ValidationLabeledImage) Label() string {
 	return l.label
 }
 
+// Data ...
 func (l ILSVRC2012ValidationLabeledImage) Data() (interface{}, error) {
 	return l.data, nil
 }
 
+// New ...
 func (d *ILSVRC2012Validation) New(ctx context.Context) (dldataset.Dataset, error) {
 	return iLSVRC2012Validation, nil
 }
@@ -49,10 +54,12 @@ func (d *ILSVRC2012Validation) workingDir() string {
 	return filepath.Join(d.baseWorkingDir, category, name)
 }
 
+// Name ...
 func (d *ILSVRC2012Validation) Name() string {
 	return "ilsvrc2012_validation"
 }
 
+// CanonicalName ...
 func (d *ILSVRC2012Validation) CanonicalName() string {
 	category := strings.ToLower(d.Category())
 	name := strings.ToLower(d.Name())
@@ -60,14 +67,17 @@ func (d *ILSVRC2012Validation) CanonicalName() string {
 	return key
 }
 
+// Download ...
 func (d *ILSVRC2012Validation) Download(ctx context.Context) error {
 	return nil
 }
 
+// List ...
 func (d *ILSVRC2012Validation) List(ctx context.Context) ([]string, error) {
 	return d.filePaths, nil
 }
 
+// GetWithoutDownloadManager ...
 func (d *ILSVRC2012Validation) GetWithoutDownloadManager(ctx context.Context, name string) (dldataset.LabeledData, error) {
 	fileURL, ok := d.fileURLs[name]
 	if !ok {
@@ -96,6 +106,7 @@ func (d *ILSVRC2012Validation) GetWithoutDownloadManager(ctx context.Context, na
 	}, nil
 }
 
+// Get ...
 func (d *ILSVRC2012Validation) Get(ctx context.Context, name string) (dldataset.LabeledData, error) {
 	fileURL, ok := d.fileURLs[name]
 	if !ok {
@@ -133,6 +144,7 @@ func (d *ILSVRC2012Validation) Get(ctx context.Context, name string) (dldataset.
 	}, nil
 }
 
+// Close ...
 func (d *ILSVRC2012Validation) Close() error {
 	return nil
 }

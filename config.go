@@ -11,6 +11,7 @@ type dldatasetConfig struct {
 	done             chan struct{} `json:"-" config:"-"`
 }
 
+// Config ...
 var (
 	// Config holds the data read by rai-project/config
 	Config = &dldatasetConfig{
@@ -18,14 +19,17 @@ var (
 	}
 )
 
+// ConfigName ...
 func (dldatasetConfig) ConfigName() string {
 	return "DLDataset"
 }
 
+// SetDefaults ...
 func (c *dldatasetConfig) SetDefaults() {
 	vipertags.SetDefaults(c)
 }
 
+// Read ...
 func (c *dldatasetConfig) Read() {
 	defer close(c.done)
 	config.App.Wait()
@@ -35,14 +39,17 @@ func (c *dldatasetConfig) Read() {
 	}
 }
 
+// Wait ...
 func (c dldatasetConfig) Wait() {
 	<-c.done
 }
 
+// String ...
 func (c dldatasetConfig) String() string {
 	return pp.Sprintln(c)
 }
 
+// Debug ...
 func (c dldatasetConfig) Debug() {
 	log.Debug("DLDataset Config = ", c)
 }

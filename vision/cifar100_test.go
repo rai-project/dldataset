@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// TestDownloadCIFAR100 ...
 func TestDownloadCIFAR100(t *testing.T) {
 	ctx := context.Background()
 

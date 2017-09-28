@@ -9,6 +9,7 @@ type base struct {
 	baseWorkingDir string
 }
 
+// Category ...
 func (base) Category() string {
 	return "vision"
 }

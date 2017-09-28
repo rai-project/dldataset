@@ -6,11 +6,13 @@ import (
 	context "golang.org/x/net/context"
 )
 
+// LabeledData ...
 type LabeledData interface {
 	Label() string
 	Data() (interface{}, error)
 }
 
+// Dataset ...
 type Dataset interface {
 	New(ctx context.Context) (Dataset, error)
 	Category() string

@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// TestDownloadMNIST ...
 func TestDownloadMNIST(t *testing.T) {
 	ctx := context.Background()
 

@@ -10,6 +10,7 @@ import (
 
 var datasets syncmap.Map
 
+// Get ...
 func Get(category, name string) (Dataset, error) {
 	category = strings.ToLower(category)
 	name = strings.ToLower(name)
@@ -31,10 +32,12 @@ func Get(category, name string) (Dataset, error) {
 	return dataset, nil
 }
 
+// Register ...
 func Register(d Dataset) {
 	datasets.Store(d.CanonicalName(), d)
 }
 
+// Datasets ...
 func Datasets() []string {
 	names := []string{}
 	datasets.Range(func(key, _ interface{}) bool {

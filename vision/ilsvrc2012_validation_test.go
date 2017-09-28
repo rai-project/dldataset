@@ -9,6 +9,7 @@ import (
 	context "golang.org/x/net/context"
 )
 
+// TestILSVRC2012Validation ...
 func TestILSVRC2012Validation(t *testing.T) {
 
 	ctx := context.Background()

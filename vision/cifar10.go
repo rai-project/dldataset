@@ -23,6 +23,7 @@ import (
 
 var cifar10 *CIFAR10
 
+// CIFAR10 ...
 type CIFAR10 struct {
 	base
 	url                 string
@@ -40,23 +41,28 @@ type CIFAR10 struct {
 	isDownloaded        bool
 }
 
+// CIFAR10LabeledImage ...
 type CIFAR10LabeledImage struct {
 	label string
 	data  *types.RGBImage
 }
 
+// Label ...
 func (l CIFAR10LabeledImage) Label() string {
 	return l.label
 }
 
+// Data ...
 func (l CIFAR10LabeledImage) Data() (interface{}, error) {
 	return l.data, nil
 }
 
+// Name ...
 func (*CIFAR10) Name() string {
 	return "CIFAR10"
 }
 
+// CanonicalName ...
 func (d *CIFAR10) CanonicalName() string {
 	category := strings.ToLower(d.Category())
 	name := strings.ToLower(d.Name())
@@ -64,10 +70,12 @@ func (d *CIFAR10) CanonicalName() string {
 	return key
 }
 
+// New ...
 func (d *CIFAR10) New(ctx context.Context) (dldataset.Dataset, error) {
 	return cifar10, nil
 }
 
+// Download ...
 func (d *CIFAR10) Download(ctx context.Context) error {
 	if d.isDownloaded {
 		return nil
@@ -135,6 +143,7 @@ func (d *CIFAR10) move(ctx context.Context) error {
 	return nil
 }
 
+// List ...
 func (d *CIFAR10) List(ctx context.Context) ([]string, error) {
 	if err := d.read(ctx); err != nil {
 		return nil, err
@@ -146,6 +155,7 @@ func (d *CIFAR10) List(ctx context.Context) ([]string, error) {
 	return keys, nil
 }
 
+// Get ...
 func (d *CIFAR10) Get(ctx context.Context, name string) (dldataset.LabeledData, error) {
 	if err := d.read(ctx); err != nil {
 		return nil, err
@@ -279,6 +289,7 @@ func (d *CIFAR10) readLabels(ctx context.Context) error {
 	return nil
 }
 
+// Close ...
 func (d *CIFAR10) Close() error {
 	return nil
 }

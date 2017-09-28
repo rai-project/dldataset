@@ -37,6 +37,7 @@ type _escFile struct {
 	name string
 }
 
+// Open ...
 func (_escLocalFS) Open(name string) (http.File, error) {
 	f, present := _escData[path.Clean(name)]
 	if !present {
@@ -70,6 +71,7 @@ func (_escStaticFS) prepare(name string) (*_escFile, error) {
 	return f, nil
 }
 
+// Open ...
 func (fs _escStaticFS) Open(name string) (http.File, error) {
 	f, err := fs.prepare(name)
 	if err != nil {
@@ -78,10 +80,12 @@ func (fs _escStaticFS) Open(name string) (http.File, error) {
 	return f.File()
 }
 
+// Open ...
 func (dir _escDirectory) Open(name string) (http.File, error) {
 	return dir.fs.Open(dir.name + name)
 }
 
+// File ...
 func (f *_escFile) File() (http.File, error) {
 	type httpFile struct {
 		*bytes.Reader
@@ -93,38 +97,47 @@ func (f *_escFile) File() (http.File, error) {
 	}, nil
 }
 
+// Close ...
 func (f *_escFile) Close() error {
 	return nil
 }
 
+// Readdir ...
 func (f *_escFile) Readdir(count int) ([]os.FileInfo, error) {
 	return nil, nil
 }
 
+// Stat ...
 func (f *_escFile) Stat() (os.FileInfo, error) {
 	return f, nil
 }
 
+// Name ...
 func (f *_escFile) Name() string {
 	return f.name
 }
 
+// Size ...
 func (f *_escFile) Size() int64 {
 	return f.size
 }
 
+// Mode ...
 func (f *_escFile) Mode() os.FileMode {
 	return 0
 }
 
+// ModTime ...
 func (f *_escFile) ModTime() time.Time {
 	return time.Unix(f.modtime, 0)
 }
 
+// IsDir ...
 func (f *_escFile) IsDir() bool {
 	return f.isDir
 }
 
+// Sys ...
 func (f *_escFile) Sys() interface{} {
 	return f
 }

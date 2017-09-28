@@ -23,6 +23,7 @@ import (
 
 var cifar100 *CIFAR100
 
+// CIFAR100 ...
 type CIFAR100 struct {
 	base
 	url                  string
@@ -43,32 +44,39 @@ type CIFAR100 struct {
 	isDownloaded         bool
 }
 
+// CIFAR100LabeledImage ...
 type CIFAR100LabeledImage struct {
 	coarseLabel string
 	fineLabel   string
 	data        *types.RGBImage
 }
 
+// CoarseLabel ...
 func (l CIFAR100LabeledImage) CoarseLabel() string {
 	return l.coarseLabel
 }
 
+// FineLabel ...
 func (l CIFAR100LabeledImage) FineLabel() string {
 	return l.fineLabel
 }
 
+// Label ...
 func (l CIFAR100LabeledImage) Label() string {
 	return l.FineLabel()
 }
 
+// Data ...
 func (l CIFAR100LabeledImage) Data() (interface{}, error) {
 	return l.data, nil
 }
 
+// Name ...
 func (*CIFAR100) Name() string {
 	return "CIFAR100"
 }
 
+// CanonicalName ...
 func (d *CIFAR100) CanonicalName() string {
 	category := strings.ToLower(d.Category())
 	name := strings.ToLower(d.Name())
@@ -76,10 +84,12 @@ func (d *CIFAR100) CanonicalName() string {
 	return key
 }
 
+// New ...
 func (d *CIFAR100) New(ctx context.Context) (dldataset.Dataset, error) {
 	return cifar100, nil
 }
 
+// Download ...
 func (d *CIFAR100) Download(ctx context.Context) error {
 	if d.isDownloaded {
 		return nil
@@ -157,6 +167,7 @@ func (d *CIFAR100) move(ctx context.Context) error {
 	return nil
 }
 
+// List ...
 func (d *CIFAR100) List(ctx context.Context) ([]string, error) {
 	if err := d.read(ctx); err != nil {
 		return nil, err
@@ -168,6 +179,7 @@ func (d *CIFAR100) List(ctx context.Context) ([]string, error) {
 	return keys, nil
 }
 
+// Get ...
 func (d *CIFAR100) Get(ctx context.Context, name string) (dldataset.LabeledData, error) {
 	if err := d.read(ctx); err != nil {
 		return nil, err
@@ -332,6 +344,7 @@ func (d *CIFAR100) readLabels(ctx context.Context) error {
 	return nil
 }
 
+// Close ...
 func (d *CIFAR100) Close() error {
 	return nil
 }

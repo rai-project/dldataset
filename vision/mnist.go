@@ -15,6 +15,7 @@ import (
 	mnistLoader "github.com/unixpickle/mnist"
 )
 
+// MNIST ...
 type MNIST struct {
 	base
 	trainingData mnistLoader.DataSet
@@ -23,23 +24,28 @@ type MNIST struct {
 
 var mnist *MNIST
 
+// MNISTLabeledImage ...
 type MNISTLabeledImage struct {
 	label string
 	data  *types.RGBImage
 }
 
+// Label ...
 func (l MNISTLabeledImage) Label() string {
 	return l.label
 }
 
+// Data ...
 func (l MNISTLabeledImage) Data() (interface{}, error) {
 	return l.data, nil
 }
 
+// Name ...
 func (*MNIST) Name() string {
 	return "MNIST"
 }
 
+// CanonicalName ...
 func (d *MNIST) CanonicalName() string {
 	category := strings.ToLower(d.Category())
 	name := strings.ToLower(d.Name())
@@ -47,14 +53,17 @@ func (d *MNIST) CanonicalName() string {
 	return key
 }
 
+// New ...
 func (d *MNIST) New(ctx context.Context) (dldataset.Dataset, error) {
 	return mnist, nil
 }
 
+// Download ...
 func (d *MNIST) Download(ctx context.Context) error {
 	return nil
 }
 
+// List ...
 func (d *MNIST) List(ctx context.Context) ([]string, error) {
 	lst := []string{}
 	for ii := range d.trainingData.Samples {
@@ -66,6 +75,7 @@ func (d *MNIST) List(ctx context.Context) ([]string, error) {
 	return lst, nil
 }
 
+// Get ...
 func (d *MNIST) Get(ctx context.Context, name string) (dldataset.LabeledData, error) {
 	var dataset mnistLoader.DataSet
 	if strings.HasPrefix(name, "train/") {
@@ -108,6 +118,7 @@ func (d *MNIST) Get(ctx context.Context, name string) (dldataset.LabeledData, er
 	}, nil
 }
 
+// Close ...
 func (d *MNIST) Close() error {
 	return nil
 }
