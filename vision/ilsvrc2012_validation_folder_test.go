@@ -14,7 +14,7 @@ func TestILSVRC2012Validation(t *testing.T) {
 
 	ctx := context.Background()
 
-	ilsvrc, err := dldataset.Get("vision", "ilsvrc2012_validation")
+	ilsvrc, err := dldataset.Get("vision", "ilsvrc2012_validation_folder")
 	assert.NoError(t, err)
 	assert.NotEmpty(t, ilsvrc)
 
