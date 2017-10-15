@@ -16,10 +16,10 @@ import (
 	context "golang.org/x/net/context"
 )
 
-var iLSVRC2012Validation *ILSVRC2012Validation
+var iLSVRC2012ValidationFolder *ILSVRC2012ValidationFolder
 
-// ILSVRC2012Validation ...
-type ILSVRC2012Validation struct {
+// ILSVRC2012ValidationFolder ...
+type ILSVRC2012ValidationFolder struct {
 	base
 	baseURL   string
 	filePaths []string
@@ -27,40 +27,24 @@ type ILSVRC2012Validation struct {
 	data      map[string]ILSVRC2012ValidationLabeledImage
 }
 
-// ILSVRC2012ValidationLabeledImage ...
-type ILSVRC2012ValidationLabeledImage struct {
-	label string
-	data  *types.RGBImage
-}
-
-// Label ...
-func (l ILSVRC2012ValidationLabeledImage) Label() string {
-	return l.label
-}
-
-// Data ...
-func (l ILSVRC2012ValidationLabeledImage) Data() (interface{}, error) {
-	return l.data, nil
-}
-
 // New ...
-func (d *ILSVRC2012Validation) New(ctx context.Context) (dldataset.Dataset, error) {
-	return iLSVRC2012Validation, nil
+func (d *ILSVRC2012ValidationFolder) New(ctx context.Context) (dldataset.Dataset, error) {
+	return iLSVRC2012ValidationFolder, nil
 }
 
-func (d *ILSVRC2012Validation) workingDir() string {
+func (d *ILSVRC2012ValidationFolder) workingDir() string {
 	category := strings.ToLower(d.Category())
 	name := strings.ToLower(d.Name())
 	return filepath.Join(d.baseWorkingDir, category, name)
 }
 
 // Name ...
-func (d *ILSVRC2012Validation) Name() string {
+func (d *ILSVRC2012ValidationFolder) Name() string {
 	return "ilsvrc2012_validation_folder"
 }
 
 // CanonicalName ...
-func (d *ILSVRC2012Validation) CanonicalName() string {
+func (d *ILSVRC2012ValidationFolder) CanonicalName() string {
 	category := strings.ToLower(d.Category())
 	name := strings.ToLower(d.Name())
 	key := path.Join(category, name)
@@ -68,17 +52,17 @@ func (d *ILSVRC2012Validation) CanonicalName() string {
 }
 
 // Download ...
-func (d *ILSVRC2012Validation) Download(ctx context.Context) error {
+func (d *ILSVRC2012ValidationFolder) Download(ctx context.Context) error {
 	return nil
 }
 
 // List ...
-func (d *ILSVRC2012Validation) List(ctx context.Context) ([]string, error) {
+func (d *ILSVRC2012ValidationFolder) List(ctx context.Context) ([]string, error) {
 	return d.filePaths, nil
 }
 
 // GetWithoutDownloadManager ...
-func (d *ILSVRC2012Validation) GetWithoutDownloadManager(ctx context.Context, name string) (dldataset.LabeledData, error) {
+func (d *ILSVRC2012ValidationFolder) GetWithoutDownloadManager(ctx context.Context, name string) (dldataset.LabeledData, error) {
 	fileURL, ok := d.fileURLs[name]
 	if !ok {
 		return nil, errors.Errorf("the file path %v for the dataset %v was not found", name, d.CanonicalName())
@@ -107,7 +91,7 @@ func (d *ILSVRC2012Validation) GetWithoutDownloadManager(ctx context.Context, na
 }
 
 // Get ...
-func (d *ILSVRC2012Validation) Get(ctx context.Context, name string) (dldataset.LabeledData, error) {
+func (d *ILSVRC2012ValidationFolder) Get(ctx context.Context, name string) (dldataset.LabeledData, error) {
 	fileURL, ok := d.fileURLs[name]
 	if !ok {
 		return nil, errors.Errorf("the file path %v for the dataset %v was not found", name, d.CanonicalName())
@@ -145,7 +129,7 @@ func (d *ILSVRC2012Validation) Get(ctx context.Context, name string) (dldataset.
 }
 
 // Close ...
-func (d *ILSVRC2012Validation) Close() error {
+func (d *ILSVRC2012ValidationFolder) Close() error {
 	return nil
 }
 
@@ -161,7 +145,7 @@ func init() {
 			fileURLs[p] = baseURL + p
 		}
 
-		iLSVRC2012Validation = &ILSVRC2012Validation{
+		iLSVRC2012ValidationFolder = &ILSVRC2012ValidationFolder{
 			base: base{
 				ctx:            context.Background(),
 				baseWorkingDir: filepath.Join(dldataset.Config.WorkingDirectory, "dldataset"),
@@ -170,6 +154,6 @@ func init() {
 			fileURLs:  fileURLs,
 			filePaths: filePaths,
 		}
-		dldataset.Register(iLSVRC2012Validation)
+		dldataset.Register(iLSVRC2012ValidationFolder)
 	})
 }

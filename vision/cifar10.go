@@ -82,16 +82,9 @@ func (d *CIFAR10) Download(ctx context.Context) error {
 	}
 	workingDir := d.workingDir()
 	downloadedFileName := filepath.Join(workingDir, d.fileName)
-	downloadedFileName, err := downloadmanager.DownloadFile(d.url, downloadedFileName, downloadmanager.Context(ctx))
+	downloadedFileName, err := downloadmanager.DownloadFile(d.url, downloadedFileName, downloadmanager.Context(ctx), downloadmanager.MD5Sum(d.md5sum))
 	if err != nil {
 		return err
-	}
-	ok, err := utils.MD5Sum.CheckFile(downloadedFileName, d.md5sum)
-	if err != nil {
-		return errors.Wrapf(err, "unable to perform md5sum on %s", downloadedFileName)
-	}
-	if !ok {
-		return errors.Wrapf(err, "the md5 sum for %s did not match expected %s", downloadedFileName, d.md5sum)
 	}
 	if err := downloadmanager.Unarchive(workingDir, downloadedFileName); err != nil {
 		return err
