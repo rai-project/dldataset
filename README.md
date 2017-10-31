@@ -23,6 +23,6 @@ The ImageNet Large Scale Visual Recognition Challenge (ILSVRC) dataset has 1000 
 
 ## Todo
 
-- [ ] ImageNet Validation Dataset
+- [X] ImageNet Validation Dataset
 
 - [ ] <http://mscoco.org/dataset/>
