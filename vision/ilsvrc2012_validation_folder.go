@@ -99,7 +99,13 @@ func (d *ILSVRC2012ValidationFolder) Get(ctx context.Context, name string) (dlda
 
 	workingDir := d.workingDir()
 	downloadedFileName := filepath.Join(workingDir, name)
-	downloadedFileName, err := downloadmanager.DownloadFile(fileURL, downloadedFileName, downloadmanager.Context(ctx))
+	downloadedFileName, err := downloadmanager.DownloadFile(
+		fileURL,
+		downloadedFileName,
+		downloadmanager.Context(ctx),
+		downloadmanager.Cache(true),
+		downloadmanager.CheckMD5Sum(false),
+	)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to download %v", fileURL)
 	}
@@ -111,7 +117,7 @@ func (d *ILSVRC2012ValidationFolder) Get(ctx context.Context, name string) (dlda
 
 	defer f.Close()
 
-	img, err := image.Read(f)
+	img, err := image.Read(f, image.Context(ctx))
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to read image from %v", fileURL)
 	}
