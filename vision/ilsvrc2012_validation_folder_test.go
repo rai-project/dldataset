@@ -27,7 +27,7 @@ func TestILSVRC2012ValidationFolder(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, fileList)
 
-	for ii := 0; ii < 10; ii++ {
+	for ii := 0; ii < 100; ii++ {
 		lbl, err := ilsvrc.Get(ctx, fileList[ii])
 		assert.NoError(t, err)
 		assert.NotEmpty(t, lbl)
