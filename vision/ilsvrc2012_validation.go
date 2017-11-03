@@ -232,7 +232,7 @@ func init() {
 				ctx:            context.Background(),
 				baseWorkingDir: filepath.Join(dldataset.Config.WorkingDirectory, "dldataset"),
 			},
-			baseURL:        "http://store.carml.org.s3.amazonaws.com/datasets/ilsvrc2012_validation_recordio",
+			baseURL:        "https://s3.amazonaws.com/store.carml.org/datasets/ILSVRC2012_img_val_256",
 			listFileName:   "imagenet1k-val.lst",
 			indexFileName:  "imagenet1k-val.idx",
 			recordFileName: "imagenet1k-val.rec",
@@ -244,10 +244,10 @@ func init() {
 				baseWorkingDir: filepath.Join(dldataset.Config.WorkingDirectory, "dldataset"),
 			},
 			imageSize:      224,
-			baseURL:        "http://store.carml.org.s3.amazonaws.com/datasets/imagenet1k-val-224",
-			listFileName:   "imagenet1k-val-224.lst",
-			indexFileName:  "imagenet1k-val-224.idx",
-			recordFileName: "imagenet1k-val-224.rec",
+			baseURL:        "https://s3.amazonaws.com/store.carml.org/datasets/ILSVRC2012_img_val_224",
+			listFileName:   "imagenet1k-val.lst",
+			indexFileName:  "imagenet1k-val.idx",
+			recordFileName: "imagenet1k-val.rec",
 		}
 
 		iLSVRC2012Validation227RecordIO = &ILSVRC2012ValidationRecordIO{
@@ -256,10 +256,10 @@ func init() {
 				baseWorkingDir: filepath.Join(dldataset.Config.WorkingDirectory, "dldataset"),
 			},
 			imageSize:      227,
-			baseURL:        "http://store.carml.org.s3.amazonaws.com/datasets/imagenet1k-val-227",
-			listFileName:   "imagenet1k-val-227.lst",
-			indexFileName:  "imagenet1k-val-227.idx",
-			recordFileName: "imagenet1k-val-227.rec",
+			baseURL:        "https://s3.amazonaws.com/store.carml.org/datasets/ILSVRC2012_img_val_227",
+			listFileName:   "imagenet1k-val.lst",
+			indexFileName:  "imagenet1k-val.idx",
+			recordFileName: "imagenet1k-val.rec",
 		}
 		dldataset.Register(iLSVRC2012ValidationRecordIO)
 		dldataset.Register(iLSVRC2012Validation224RecordIO)

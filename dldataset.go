@@ -21,5 +21,6 @@ type Dataset interface {
 	Download(ctx context.Context) error
 	List(ctx context.Context) ([]string, error)
 	Get(ctx context.Context, name string) (LabeledData, error)
+	// Next(ctx context.Context) (LabeledData, error)
 	io.Closer
 }
