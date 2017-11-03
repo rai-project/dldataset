@@ -75,6 +75,10 @@ func (d *CIFAR10) New(ctx context.Context) (dldataset.Dataset, error) {
 	return cifar10, nil
 }
 
+func (d *CIFAR10) Load(ctx context.Context) error {
+	return nil
+}
+
 // Download ...
 func (d *CIFAR10) Download(ctx context.Context) error {
 	if d.isDownloaded {
@@ -158,6 +162,10 @@ func (d *CIFAR10) Get(ctx context.Context, name string) (dldataset.LabeledData, 
 		return nil, errors.Errorf("unable to find %s in the %s dataset", name, d.CanonicalName())
 	}
 	return data, nil
+}
+
+func (d *CIFAR10) Next(ctx context.Context) (dldataset.LabeledData, error) {
+	return nil, errors.New("next iterator is not implemented for " + d.CanonicalName())
 }
 
 func (d *CIFAR10) read(ctx context.Context) error {

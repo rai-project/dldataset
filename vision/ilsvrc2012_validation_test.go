@@ -3,7 +3,6 @@ package vision
 import (
 	"testing"
 
-	"github.com/k0kubun/pp"
 	"github.com/rai-project/dldataset"
 	"github.com/stretchr/testify/assert"
 	context "golang.org/x/net/context"
@@ -23,6 +22,9 @@ func TestILSVRC2012Validation(t *testing.T) {
 	err = ilsvrc.Download(ctx)
 	assert.NoError(t, err)
 
+	err = ilsvrc.Load(ctx)
+	assert.NoError(t, err)
+
 	lst, err := ilsvrc.List(ctx)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, lst)
@@ -30,5 +32,10 @@ func TestILSVRC2012Validation(t *testing.T) {
 	assert.Equal(t, "ILSVRC2012_val_00016503.JPEG", lst[0])
 	assert.Equal(t, "ILSVRC2012_val_00035805.JPEG", lst[1])
 
-	pp.Println(ilsvrc.Get(ctx, "ILSVRC2012_val_00016503.JPEG"))
+	for ii := 0; ii < len(lst); ii++ {
+		data, err := ilsvrc.Next(ctx)
+		assert.NoError(t, err)
+		assert.NotNil(t, data)
+		assert.IsType(t, &iLSVRC2012ValidationRecordIOLabeledData{}, data)
+	}
 }

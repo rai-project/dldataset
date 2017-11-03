@@ -58,6 +58,10 @@ func (d *MNIST) New(ctx context.Context) (dldataset.Dataset, error) {
 	return mnist, nil
 }
 
+func (d *MNIST) Load(ctx context.Context) error {
+	return nil
+}
+
 // Download ...
 func (d *MNIST) Download(ctx context.Context) error {
 	return nil
@@ -116,6 +120,10 @@ func (d *MNIST) Get(ctx context.Context, name string) (dldataset.LabeledData, er
 		data:  img,
 		label: strconv.Itoa(elem.Label),
 	}, nil
+}
+
+func (d *MNIST) Next(ctx context.Context) (dldataset.LabeledData, error) {
+	return nil, errors.New("next iterator is not implemented for " + d.CanonicalName())
 }
 
 // Close ...

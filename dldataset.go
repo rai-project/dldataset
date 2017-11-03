@@ -20,7 +20,8 @@ type Dataset interface {
 	CanonicalName() string
 	Download(ctx context.Context) error
 	List(ctx context.Context) ([]string, error)
+	Load(ctx context.Context) error
 	Get(ctx context.Context, name string) (LabeledData, error)
-	// Next(ctx context.Context) (LabeledData, error)
+	Next(ctx context.Context) (LabeledData, error)
 	io.Closer
 }

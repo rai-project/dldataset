@@ -32,6 +32,10 @@ func (d *ILSVRC2012ValidationFolder) New(ctx context.Context) (dldataset.Dataset
 	return iLSVRC2012ValidationFolder, nil
 }
 
+func (d *ILSVRC2012ValidationFolder) Load(ctx context.Context) error {
+	return nil
+}
+
 func (d *ILSVRC2012ValidationFolder) workingDir() string {
 	category := strings.ToLower(d.Category())
 	name := strings.ToLower(d.Name())
@@ -132,6 +136,10 @@ func (d *ILSVRC2012ValidationFolder) Get(ctx context.Context, name string) (dlda
 		data:  img.(*types.RGBImage),
 		label: label,
 	}, nil
+}
+
+func (d *ILSVRC2012ValidationFolder) Next(ctx context.Context) (dldataset.LabeledData, error) {
+	return nil, errors.New("next iterator is not implemented for " + d.CanonicalName())
 }
 
 // Close ...

@@ -23,9 +23,9 @@ type RecordIOReader struct {
 }
 
 type Record struct {
-	ID    uint64
-	Label uint64
-	Image *types.RGBImage
+	ID         uint64
+	LabelIndex float32
+	Image      *types.RGBImage
 }
 
 func NewRecordIOReader(path string) (*RecordIOReader, error) {
@@ -114,9 +114,9 @@ func (r *RecordIOReader) Next(ctx context.Context) (*Record, error) {
 	}
 
 	return &Record{
-		ID:    imageId1,
-		Label: uint64(label),
-		Image: rgbImage,
+		ID:         imageId1,
+		LabelIndex: label,
+		Image:      rgbImage,
 	}, nil
 
 }

@@ -1,18 +1,16 @@
 package vision
 
 import (
-	"bytes"
 	"io/ioutil"
-	"os"
 	"path"
 	"path/filepath"
 	"strings"
 
-	"github.com/PaddlePaddle/recordio"
 	"github.com/Unknwon/com"
 	"github.com/pkg/errors"
 	"github.com/rai-project/config"
 	"github.com/rai-project/dldataset"
+	"github.com/rai-project/dldataset/reader"
 	"github.com/rai-project/downloadmanager"
 	"github.com/spf13/cast"
 	context "golang.org/x/net/context"
@@ -33,16 +31,25 @@ type ILSVRC2012ValidationRecordIO struct {
 	listFileName      string
 	indexFileName     string
 	recordFileName    string
-	index             *recordio.Index
-	recordScanner     *recordio.RangeScanner
-	recordFile        *os.File
+	recordReader      *reader.RecordIOReader
 	fileOffsetMapping map[string]recordIoOffset
-	data              map[string]ILSVRC2012ValidationLabeledImage
+}
+
+type iLSVRC2012ValidationRecordIOLabeledData struct {
+	*reader.Record
 }
 
 type recordIoOffset struct {
 	start int
 	end   int
+}
+
+func (d *iLSVRC2012ValidationRecordIOLabeledData) Label() string {
+	return synset[int(d.LabelIndex)]
+}
+
+func (d *iLSVRC2012ValidationRecordIOLabeledData) Data() (interface{}, error) {
+	return d.Image, nil
 }
 
 func (d *ILSVRC2012ValidationRecordIO) New(ctx context.Context) (dldataset.Dataset, error) {
@@ -151,72 +158,43 @@ func (d *ILSVRC2012ValidationRecordIO) List(ctx context.Context) ([]string, erro
 	return keysFileOffset(d.fileOffsetMapping), nil
 }
 
-func (d *ILSVRC2012ValidationRecordIO) loadIndex(ctx context.Context) error {
-	workingDir := d.workingDir()
-	indexFileName := filepath.Join(workingDir, d.indexFileName)
-	if !com.IsFile(indexFileName) {
-		return errors.Errorf("unable to find the index file in %v make sure to download the dataset first", indexFileName)
-	}
-
-	bts, err := ioutil.ReadFile(indexFileName)
-	if err != nil {
-		return errors.Wrapf(err, "failed to read %v", indexFileName)
-	}
-
-	idx, err := recordio.LoadIndex(bytes.NewReader(bts))
-	if err != nil {
-		return errors.Wrapf(err, "failed to load index from %v", indexFileName)
-	}
-	d.index = idx
-	return nil
-}
-
-func (d *ILSVRC2012ValidationRecordIO) loadRecord(ctx context.Context, offset recordIoOffset) error {
+func (d *ILSVRC2012ValidationRecordIO) loadRecord(ctx context.Context) error {
 	workingDir := d.workingDir()
 	recordFileName := filepath.Join(workingDir, d.recordFileName)
 	if !com.IsFile(recordFileName) {
 		return errors.Errorf("unable to find the record file in %v make sure to download the dataset first", recordFileName)
 	}
 
-	if d.recordFile == nil {
-		f, err := os.Open(recordFileName)
-		if err != nil {
-			return errors.Wrapf(err, "failed to open %v", recordFileName)
-		}
-		d.recordFile = f
+	recordIOReader, err := reader.NewRecordIOReader(recordFileName)
+	if err != nil {
+		return errors.Wrapf(err, "failed to load record from %v", recordFileName)
 	}
-
-	rng := recordio.NewRangeScanner(d.recordFile, d.index, offset.start, offset.end)
-	if rng == nil {
-		return errors.Errorf("failed to load record from %v", recordFileName)
-	}
-	d.recordScanner = rng
+	d.recordReader = recordIOReader
 	return nil
 }
 
+func (d *ILSVRC2012ValidationRecordIO) Load(ctx context.Context) error {
+	return d.loadRecord(ctx)
+}
+
 func (d *ILSVRC2012ValidationRecordIO) Get(ctx context.Context, name string) (dldataset.LabeledData, error) {
-	fileOffsetMapping := d.fileOffsetMapping
-	offset, ok := fileOffsetMapping[name]
-	if !ok {
-		return nil, errors.Errorf("file %v not found", name)
+	return nil, errors.New("get is not implemented for " + d.CanonicalName())
+}
+
+func (d *ILSVRC2012ValidationRecordIO) Next(ctx context.Context) (dldataset.LabeledData, error) {
+	rec, err := d.recordReader.Next(ctx)
+	if err != nil {
+		return nil, err
 	}
-	if d.index == nil {
-		if err := d.loadIndex(ctx); err != nil {
-			return nil, err
-		}
-	}
-	if d.recordScanner == nil {
-		if err := d.loadRecord(ctx, offset); err != nil {
-			return nil, err
-		}
-	}
-	d.recordScanner.Record()
-	return nil, nil
+
+	return &iLSVRC2012ValidationRecordIOLabeledData{
+		Record: rec,
+	}, nil
 }
 
 func (d *ILSVRC2012ValidationRecordIO) Close() error {
-	if d.recordFile != nil {
-		d.recordFile.Close()
+	if d.recordReader != nil {
+		d.recordReader.Close()
 	}
 	return nil
 }
@@ -225,7 +203,6 @@ func init() {
 	config.AfterInit(func() {
 
 		const fileListPath = "/vision/support/ilsvrc2012_validation_file_list.txt"
-		const baseURL = "http://store.carml.org.s3.amazonaws.com/datasets/imagenet1k-val-"
 
 		iLSVRC2012ValidationRecordIO = &ILSVRC2012ValidationRecordIO{
 			base: base{
