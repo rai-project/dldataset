@@ -103,7 +103,7 @@ func (r *RecordIOReader) Next(ctx context.Context) (*Record, error) {
 	padding := make([]byte, paddedLength-length)
 	io.ReadFull(f, padding)
 
-	img, err := image.Read(bytes.NewBuffer(bts), image.Context(ctx))
+	img, err := image.Read(bytes.NewBuffer(bts), image.Context(nil))
 	if err != nil {
 		return nil, err
 	}
