@@ -21,6 +21,7 @@ var (
 	iLSVRC2012ValidationRecordIO    *ILSVRC2012ValidationRecordIO
 	iLSVRC2012Validation224RecordIO *ILSVRC2012ValidationRecordIO
 	iLSVRC2012Validation227RecordIO *ILSVRC2012ValidationRecordIO
+	iLSVRC2012Validation299RecordIO *ILSVRC2012ValidationRecordIO
 )
 
 // ILSVRC2012ValidationFolder ...
@@ -238,8 +239,20 @@ func init() {
 			indexFileName:  "imagenet1k-val.idx",
 			recordFileName: "imagenet1k-val.rec",
 		}
+		iLSVRC2012Validation299RecordIO = &ILSVRC2012ValidationRecordIO{
+			base: base{
+				ctx:            context.Background(),
+				baseWorkingDir: filepath.Join(dldataset.Config.WorkingDirectory, "dldataset"),
+			},
+			imageSize:      299,
+			baseURL:        "https://s3.amazonaws.com/store.carml.org/datasets/ILSVRC2012_img_val_299",
+			listFileName:   "imagenet1k-val.lst",
+			indexFileName:  "imagenet1k-val.idx",
+			recordFileName: "imagenet1k-val.rec",
+		}
 		dldataset.Register(iLSVRC2012ValidationRecordIO)
 		dldataset.Register(iLSVRC2012Validation224RecordIO)
 		dldataset.Register(iLSVRC2012Validation227RecordIO)
+		dldataset.Register(iLSVRC2012Validation299RecordIO)
 	})
 }
