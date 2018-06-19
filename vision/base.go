@@ -1,7 +1,7 @@
 package vision
 
 import (
-	context "golang.org/x/net/context"
+	context "context"
 )
 
 type base struct {

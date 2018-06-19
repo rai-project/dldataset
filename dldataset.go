@@ -3,7 +3,7 @@ package dldataset
 import (
 	"io"
 
-	context "golang.org/x/net/context"
+	context "context"
 )
 
 // LabeledData ...

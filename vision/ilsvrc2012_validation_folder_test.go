@@ -3,10 +3,10 @@ package vision
 import (
 	"testing"
 
+	context "context"
 	"github.com/rai-project/dldataset"
 	"github.com/rai-project/image/types"
 	"github.com/stretchr/testify/assert"
-	context "golang.org/x/net/context"
 )
 
 // TestILSVRC2012ValidationFolder ...

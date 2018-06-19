@@ -7,7 +7,7 @@ import (
 	"os"
 	"unsafe"
 
-	context "golang.org/x/net/context"
+	context "context"
 
 	"github.com/pkg/errors"
 	"github.com/rai-project/image"

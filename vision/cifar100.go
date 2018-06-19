@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 
+	context "context"
 	"github.com/Unknwon/com"
 	"github.com/pkg/errors"
 	"github.com/rai-project/config"
@@ -18,7 +19,6 @@ import (
 	"github.com/rai-project/downloadmanager"
 	"github.com/rai-project/image/types"
 	"github.com/rai-project/utils"
-	context "golang.org/x/net/context"
 )
 
 var cifar100 *CIFAR100

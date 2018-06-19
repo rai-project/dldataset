@@ -8,7 +8,7 @@ import (
 	"testing"
 	"unsafe"
 
-	context "golang.org/x/net/context"
+	context "context"
 
 	goimage "image"
 	"image/png"

@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	context "context"
 	"github.com/Unknwon/com"
 	"github.com/pkg/errors"
 	"github.com/rai-project/config"
@@ -13,7 +14,6 @@ import (
 	"github.com/rai-project/dldataset/reader"
 	"github.com/rai-project/downloadmanager"
 	"github.com/spf13/cast"
-	context "golang.org/x/net/context"
 	"golang.org/x/sync/errgroup"
 )
 

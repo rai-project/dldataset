@@ -3,9 +3,9 @@ package vision
 import (
 	"testing"
 
+	context "context"
 	"github.com/rai-project/dldataset"
 	"github.com/stretchr/testify/assert"
-	context "golang.org/x/net/context"
 )
 
 // TestILSVRC2012Validation ...

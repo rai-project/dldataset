@@ -3,7 +3,7 @@ package vision
 import (
 	"testing"
 
-	context "golang.org/x/net/context"
+	context "context"
 
 	"github.com/rai-project/dldataset"
 	"github.com/stretchr/testify/assert"

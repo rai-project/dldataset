@@ -7,13 +7,13 @@ import (
 	"path/filepath"
 	"strings"
 
+	context "context"
 	"github.com/pkg/errors"
 	"github.com/rai-project/config"
 	"github.com/rai-project/dldataset"
 	"github.com/rai-project/downloadmanager"
 	"github.com/rai-project/image"
 	"github.com/rai-project/image/types"
-	context "golang.org/x/net/context"
 )
 
 var iLSVRC2012ValidationFolder *ILSVRC2012ValidationFolder
