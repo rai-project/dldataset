@@ -17,7 +17,6 @@ import:
 - package: golang.org/x/sync
   subpackages:
   - syncmap
-testImport:
 - package: github.com/stretchr/testify
   subpackages:
   - assert
