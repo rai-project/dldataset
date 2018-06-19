@@ -14,9 +14,6 @@ import:
 - package: github.com/sirupsen/logrus
   version: ^1.0.0
 - package: github.com/unixpickle/mnist
-- package: golang.org/x/net
-  subpackages:
-  - context
 - package: golang.org/x/sync
   subpackages:
   - syncmap
