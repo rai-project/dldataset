@@ -22,12 +22,6 @@ type RecordIOReader struct {
 	r io.ReadCloser
 }
 
-type Record struct {
-	ID         uint64
-	LabelIndex float32
-	Image      *types.RGBImage
-}
-
 func NewRecordIOReader(path string) (*RecordIOReader, error) {
 	r, err := os.Open(path)
 	if err != nil {
@@ -38,7 +32,7 @@ func NewRecordIOReader(path string) (*RecordIOReader, error) {
 	}, nil
 }
 
-func (r *RecordIOReader) Next(ctx context.Context) (*Record, error) {
+func (r *RecordIOReader) Next(ctx context.Context) (*ImageRecord, error) {
 	f := r.r
 
 	var magic uint32
@@ -113,7 +107,7 @@ func (r *RecordIOReader) Next(ctx context.Context) (*Record, error) {
 		return nil, errors.Errorf("expecting an rgb image")
 	}
 
-	return &Record{
+	return &ImageRecord{
 		ID:         imageId1,
 		LabelIndex: label,
 		Image:      rgbImage,
