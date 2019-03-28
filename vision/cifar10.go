@@ -11,7 +11,11 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/rai-project/dlframework"
+	"github.com/rai-project/dlframework/framework/feature"
+
 	context "context"
+
 	"github.com/Unknwon/com"
 	"github.com/pkg/errors"
 	"github.com/rai-project/config"
@@ -50,6 +54,13 @@ type CIFAR10LabeledImage struct {
 // Label ...
 func (l CIFAR10LabeledImage) Label() string {
 	return l.label
+}
+
+// Feature ...
+func (l CIFAR10LabeledImage) Feature() *dlframework.Feature {
+	return feature.New(
+		feature.ClassificationLabel(l.label),
+	)
 }
 
 // Data ...

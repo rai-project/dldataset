@@ -12,6 +12,7 @@ import (
 	"github.com/rai-project/image"
 	"github.com/rai-project/image/types"
 	"github.com/ubccr/terf"
+	protobuf "github.com/ubccr/terf/protobuf"
 )
 
 type TFRecordReader struct {
@@ -28,6 +29,14 @@ func NewTFRecordReader(path string) (*TFRecordReader, error) {
 		r:      r,
 		Reader: terf.NewReader(r),
 	}, nil
+}
+
+func (r *TFRecordReader) NextRecord(ctx context.Context) (*protobuf.Example, error) {
+	nxt, err := r.Reader.Next()
+	if err != nil {
+		return nil, err
+	}
+	return nxt, nil
 }
 
 func (r *TFRecordReader) Next(ctx context.Context) (*ImageRecord, error) {

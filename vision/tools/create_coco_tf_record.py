@@ -14,7 +14,7 @@
 # ==============================================================================
 
 # run using
-# python create_coco_tf_record.py --logtostderr --val_image_dir=$HOME/data/coco2014/val2014 --val_annotations_file=$HOME/data/coco2014/annotations/instances_val2014.json -output_dir=$HOME/data/coco2014
+# python create_coco_tf_record.py --logtostderr --val_image_dir=$HOME/data/coco2014/val2014 --val_annotations_file=$HOME/data/coco2014/annotations/instances_val2014.json --output_dir=$HOME/data/coco2014
 
 r"""Convert raw COCO dataset to TFRecord for object_detection.
 
