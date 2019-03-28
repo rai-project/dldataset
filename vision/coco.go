@@ -1,7 +1,6 @@
 package vision
 
 import (
-	"bytes"
 	context "context"
 	"path"
 	"path/filepath"
@@ -16,7 +15,6 @@ import (
 	"github.com/rai-project/dlframework"
 	"github.com/rai-project/dlframework/framework/feature"
 	"github.com/rai-project/downloadmanager"
-	"github.com/rai-project/image"
 	"github.com/rai-project/image/types"
 	protobuf "github.com/ubccr/terf/protobuf"
 )
@@ -157,24 +155,10 @@ func (d *CocoValidationTFRecord) Next(ctx context.Context) (dldataset.LabeledDat
 		return nil, err
 	}
 
-	return nextCocoFromRecord(rec), nil
+	return NewCocoLabeledImageFromRecord(rec), nil
 }
 
-func getImageRecord(data []byte, format string) (*types.RGBImage, error) {
-	img, err := image.Read(bytes.NewBuffer(data), image.Context(nil))
-	if err != nil {
-		return nil, err
-	}
-
-	rgbImage, ok := img.(*types.RGBImage)
-	if !ok {
-		return nil, errors.Errorf("expecting an rgb image")
-	}
-
-	return rgbImage, nil
-}
-
-func nextCocoFromRecord(rec *protobuf.Example) *CocoLabeledImage {
+func NewCocoLabeledImageFromRecord(rec *protobuf.Example) *CocoLabeledImage {
 	height := tfrecord.FeatureInt64(rec, "image/height")
 	width := tfrecord.FeatureInt64(rec, "image/width")
 	fileName := tfrecord.FeatureString(rec, "image/filename")
@@ -203,6 +187,8 @@ func nextCocoFromRecord(rec *protobuf.Example) *CocoLabeledImage {
 			feature.BoundingBoxYmin(bboxYmin[ii]),
 			feature.BoundingBoxYmax(bboxYmax[ii]),
 			feature.BoundingBoxLabel(class[ii]),
+			feature.AppendMetadata("isCrowd", isCrowd[ii]),
+			feature.AppendMetadata("area", area[ii]),
 		)
 	}
 
