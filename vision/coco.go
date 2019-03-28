@@ -150,6 +150,7 @@ func (d *CocoValidationTFRecord) Load(ctx context.Context) error {
 	return d.loadRecord(ctx)
 }
 
+// Next ...
 func (d *CocoValidationTFRecord) Next(ctx context.Context) (dldataset.LabeledData, error) {
 	rec, err := d.recordReader.NextRecord(ctx)
 	if err != nil {

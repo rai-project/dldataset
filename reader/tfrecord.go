@@ -15,6 +15,7 @@ import (
 	protobuf "github.com/ubccr/terf/protobuf"
 )
 
+// TFRecordReader ...
 type TFRecordReader struct {
 	r io.ReadCloser
 	*terf.Reader
@@ -32,6 +33,7 @@ func NewTFRecordReader(path string) (*TFRecordReader, error) {
 	}, nil
 }
 
+// NextRecord ...
 func (r *TFRecordReader) NextRecord(ctx context.Context) (*protobuf.Example, error) {
 	nxt, err := r.Reader.Next()
 	if err != nil {
@@ -40,6 +42,7 @@ func (r *TFRecordReader) NextRecord(ctx context.Context) (*protobuf.Example, err
 	return nxt, nil
 }
 
+// Next ...
 func (r *TFRecordReader) Next(ctx context.Context) (*ImageRecord, error) {
 	nxt, err := r.Reader.Next()
 	if err != nil {

@@ -5,6 +5,7 @@ import (
 	protobuf "github.com/ubccr/terf/protobuf"
 )
 
+// FeatureBool ...
 func FeatureBool(rec *protobuf.Example, key string) bool {
 	return FeatureInt(rec, key) == 1
 }
@@ -24,10 +25,12 @@ func FeatureInt64(rec *protobuf.Example, key string) int64 {
 	return val.Int64List.Value[0]
 }
 
+// FeatureInt ...
 func FeatureInt(rec *protobuf.Example, key string) int {
 	return int(FeatureInt64(rec, key))
 }
 
+// FeatureInt32 ...
 func FeatureInt32(rec *protobuf.Example, key string) int32 {
 	return int32(FeatureInt64(rec, key))
 }
@@ -52,6 +55,7 @@ func FeatureFloat32(rec *protobuf.Example, key string) float32 {
 	return val.FloatList.Value[0]
 }
 
+// FeatureBytes ...
 func FeatureBytes(rec *protobuf.Example, key string) []byte {
 	return terf.ExampleFeatureBytes(rec, key)
 }

@@ -9,6 +9,7 @@ type ImageRecord struct {
 	Image      *types.RGBImage
 }
 
+// ImageSegmentationRecord ...
 type ImageSegmentationRecord struct {
 	ID         uint64
 	LabelIndex float32
