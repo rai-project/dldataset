@@ -1,11 +1,13 @@
 package vision
 
 import (
-	"bytes"
 	context "context"
+	"fmt"
 	"path"
 	"path/filepath"
 	"strings"
+
+	"github.com/rai-project/dldataset/vision/support/object_detection"
 
 	"github.com/Unknwon/com"
 	"github.com/pkg/errors"
@@ -16,7 +18,6 @@ import (
 	"github.com/rai-project/dlframework"
 	"github.com/rai-project/dlframework/framework/feature"
 	"github.com/rai-project/downloadmanager"
-	"github.com/rai-project/image"
 	"github.com/rai-project/image/types"
 	protobuf "github.com/ubccr/terf/protobuf"
 )
@@ -37,11 +38,13 @@ type CocoLabeledImage struct {
 // CocoValidationTFRecord ...
 type CocoValidationTFRecord struct {
 	base
-	name           string
-	baseURL        string
-	recordFileName string
-	md5sum         string
-	recordReader   *reader.TFRecordReader
+	name             string
+	baseURL          string
+	recordFileName   string
+	md5sum           string
+	labelMap         object_detection.StringIntLabelMap
+	completeLabelMap object_detection.StringIntLabelMap
+	recordReader     *reader.TFRecordReader
 }
 
 var (
@@ -157,24 +160,10 @@ func (d *CocoValidationTFRecord) Next(ctx context.Context) (dldataset.LabeledDat
 		return nil, err
 	}
 
-	return nextCocoFromRecord(rec), nil
+	return NewCocoLabeledImageFromRecord(rec), nil
 }
 
-func getImageRecord(data []byte, format string) (*types.RGBImage, error) {
-	img, err := image.Read(bytes.NewBuffer(data), image.Context(nil))
-	if err != nil {
-		return nil, err
-	}
-
-	rgbImage, ok := img.(*types.RGBImage)
-	if !ok {
-		return nil, errors.Errorf("expecting an rgb image")
-	}
-
-	return rgbImage, nil
-}
-
-func nextCocoFromRecord(rec *protobuf.Example) *CocoLabeledImage {
+func NewCocoLabeledImageFromRecord(rec *protobuf.Example) *CocoLabeledImage {
 	height := tfrecord.FeatureInt64(rec, "image/height")
 	width := tfrecord.FeatureInt64(rec, "image/width")
 	fileName := tfrecord.FeatureString(rec, "image/filename")
@@ -203,6 +192,8 @@ func nextCocoFromRecord(rec *protobuf.Example) *CocoLabeledImage {
 			feature.BoundingBoxYmin(bboxYmin[ii]),
 			feature.BoundingBoxYmax(bboxYmax[ii]),
 			feature.BoundingBoxLabel(class[ii]),
+			feature.AppendMetadata("isCrowd", isCrowd[ii]),
+			feature.AppendMetadata("area", area[ii]),
 		)
 	}
 
@@ -224,16 +215,28 @@ func init() {
 
 		const baseURLPrefix = "https://s3.amazonaws.com/store.carml.org/datasets"
 
+		labelMap, err := object_detection.Get("mscoco_label_map.pbtxt")
+		if err != nil {
+			panic(fmt.Sprintf("failed to get mscoco_label_map.pbtxt due to %v", err))
+		}
+
+		completeLabelMap, err := object_detection.Get("mscoco_complete_label_map.pbtxt")
+		if err != nil {
+			panic(fmt.Sprintf("failed to get mscoco_complete_label_map.pbtxt due to %v", err))
+		}
+
 		baseWorkingDir := filepath.Join(dldataset.Config.WorkingDirectory, "dldataset")
 		coco2014ValidationTFRecord = &CocoValidationTFRecord{
 			base: base{
 				ctx:            context.Background(),
 				baseWorkingDir: baseWorkingDir,
 			},
-			name:           "coco2014",
-			baseURL:        baseURLPrefix + "/coco2014",
-			recordFileName: "coco_val.record-00000-of-00001",
-			md5sum:         "b1f63512f72d3c84792a1f53ec40062a",
+			name:             "coco2014",
+			baseURL:          baseURLPrefix + "/coco2014",
+			labelMap:         labelMap,
+			completeLabelMap: completeLabelMap,
+			recordFileName:   "coco_val.record-00000-of-00001",
+			md5sum:           "b1f63512f72d3c84792a1f53ec40062a",
 		}
 
 		coco2017ValidationTFRecord = &CocoValidationTFRecord{
@@ -241,10 +244,12 @@ func init() {
 				ctx:            context.Background(),
 				baseWorkingDir: baseWorkingDir,
 			},
-			name:           "coco2017",
-			baseURL:        baseURLPrefix + "/coco2017",
-			recordFileName: "coco_val.record-00000-of-00001",
-			md5sum:         "b8a0cfed5ad569d4572b4ad8645acb5b",
+			name:             "coco2017",
+			baseURL:          baseURLPrefix + "/coco2017",
+			labelMap:         labelMap,
+			completeLabelMap: completeLabelMap,
+			recordFileName:   "coco_val.record-00000-of-00001",
+			md5sum:           "b8a0cfed5ad569d4572b4ad8645acb5b",
 		}
 
 		dldataset.Register(coco2014ValidationTFRecord)

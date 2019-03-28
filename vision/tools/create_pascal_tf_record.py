@@ -13,6 +13,9 @@
 # limitations under the License.
 # ==============================================================================
 
+# python create_pascal_tf_record.py --data_dir=$HOME/data/voc --set=val --output_path=$HOME/data/voc/voc07.tfrecord --year=VOC2007
+# python create_pascal_tf_record.py --data_dir=$HOME/data/voc --set=val --output_path=$HOME/data/voc/voc12.tfrecord --year=VOC2012
+
 r"""Convert raw PASCAL dataset to TFRecord for object_detection.
 
 Example usage:
@@ -34,8 +37,8 @@ from lxml import etree
 import PIL.Image
 import tensorflow as tf
 
-from object_detection.utils import dataset_util
-from object_detection.utils import label_map_util
+import dataset_util
+import label_map_util
 
 
 flags = tf.app.flags

@@ -13,6 +13,8 @@
 # limitations under the License.
 # ==============================================================================
 
+# python create_pet_tf_record.py --label_map_path=../support/object_detection/assets/pet_label_map.pbtxt --data_dir=$HOME/data/pet --output_dir=$HOME/data/pet
+
 r"""Convert the Oxford pet dataset to TFRecord for object_detection.
 
 See: O. M. Parkhi, A. Vedaldi, A. Zisserman, C. V. Jawahar
@@ -39,9 +41,9 @@ import numpy as np
 import PIL.Image
 import tensorflow as tf
 
-from object_detection.dataset_tools import tf_record_creation_util
-from object_detection.utils import dataset_util
-from object_detection.utils import label_map_util
+import tf_record_creation_util
+import dataset_util
+import label_map_util
 
 flags = tf.app.flags
 flags.DEFINE_string('data_dir', '', 'Root directory to raw pet dataset.')
@@ -54,7 +56,7 @@ flags.DEFINE_boolean('faces_only', True, 'If True, generates bounding boxes '
                      'in the latter case, the resulting files are much larger.')
 flags.DEFINE_string('mask_type', 'png', 'How to represent instance '
                     'segmentation masks. Options are "png" or "numerical".')
-flags.DEFINE_integer('num_shards', 10, 'Number of TFRecord shards')
+flags.DEFINE_integer('num_shards', 1, 'Number of TFRecord shards')
 
 FLAGS = flags.FLAGS
 

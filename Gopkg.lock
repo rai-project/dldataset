@@ -10,6 +10,14 @@
   revision = "83e8b8723a9bf39481216e80575f4854c63ece4a"
 
 [[projects]]
+  digest = "0:"
+  name = "github.com/Masterminds/semver"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "c7af12943936e8c39859482e61f0574c2fd7fc75"
+  version = "v1.4.2"
+
+[[projects]]
   digest = "1:e92f5581902c345eb4ceffdcd4a854fb8f73cf436d47d837d1ec98ef1fe0a214"
   name = "github.com/StackExchange/wmi"
   packages = ["."]
@@ -178,12 +186,38 @@
   version = "v1.2.1"
 
 [[projects]]
-  digest = "1:9a688317f3231e0175b3429033f44411906c0ce119361b7b5019d01375f8cff7"
+  digest = "0:"
   name = "github.com/gogo/protobuf"
-  packages = ["proto"]
+  packages = [
+    "gogoproto",
+    "proto",
+    "protoc-gen-gogo/descriptor",
+    "sortkeys",
+  ]
   pruneopts = "UT"
-  revision = "1adfc126b41513cc696b209667c8656ea7aac67c"
-  version = "v1.0.0"
+  revision = "ba06b47c162d49f2af050fb4c75bcbc86a159d5c"
+  version = "v1.2.1"
+
+[[projects]]
+  branch = "master"
+  digest = "0:"
+  name = "github.com/golang/protobuf"
+  packages = [
+    "jsonpb",
+    "proto",
+    "protoc-gen-go/descriptor",
+    "protoc-gen-go/generator",
+    "protoc-gen-go/generator/internal/remap",
+    "protoc-gen-go/plugin",
+    "ptypes",
+    "ptypes/any",
+    "ptypes/duration",
+    "ptypes/struct",
+    "ptypes/timestamp",
+    "ptypes/wrappers",
+  ]
+  pruneopts = "UT"
+  revision = "d3c38a4eb4970272b87a425ae00ccc4548e2f9bb"
 
 [[projects]]
   branch = "master"
@@ -209,6 +243,18 @@
   ]
   pruneopts = "UT"
   revision = "fda53f8d25717c07e2dac25758075a182bd74235"
+
+[[projects]]
+  digest = "0:"
+  name = "github.com/grpc-ecosystem/grpc-gateway"
+  packages = [
+    "internal",
+    "runtime",
+    "utilities",
+  ]
+  pruneopts = "UT"
+  revision = "20f268a412e5b342ebfb1a0eef7c3b7bd6c260ea"
+  version = "v1.8.5"
 
 [[projects]]
   branch = "master"
@@ -420,6 +466,17 @@
 
 [[projects]]
   branch = "master"
+  digest = "0:"
+  name = "github.com/rai-project/dlframework"
+  packages = [
+    ".",
+    "framework/feature",
+  ]
+  pruneopts = "UT"
+  revision = "13da1e1f4ddc36d312b337bd2573b106f9db38f4"
+
+[[projects]]
+  branch = "master"
   digest = "1:2e976646a10553d022cc712f3f47ab95e98f61a9e30d24516ed14180eb989f49"
   name = "github.com/rai-project/downloadmanager"
   packages = ["."]
@@ -579,6 +636,17 @@
   pruneopts = "UT"
   revision = "f35b8ab0b5a2cef36673838d662e249dd9c94686"
   version = "v1.2.2"
+
+[[projects]]
+  branch = "master"
+  digest = "0:"
+  name = "github.com/ubccr/terf"
+  packages = [
+    ".",
+    "protobuf",
+  ]
+  pruneopts = "UT"
+  revision = "de97e3cc5b9f2f790dbfa9810559a4ab81832a8a"
 
 [[projects]]
   digest = "1:03aa6e485e528acb119fb32901cf99582c380225fc7d5a02758e08b180cb56c3"
@@ -745,9 +813,17 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:76ee51c3f468493aff39dbacc401e8831fbb765104cbf613b89bef01cf4bad70"
+  digest = "0:"
   name = "golang.org/x/net"
-  packages = ["context"]
+  packages = [
+    "context",
+    "http/httpguts",
+    "http2",
+    "http2/hpack",
+    "idna",
+    "internal/timeseries",
+    "trace",
+  ]
   pruneopts = "UT"
   revision = "afe8f62b1d6bbd81f31868121a50b06d8188e1f9"
 
@@ -774,19 +850,91 @@
   revision = "ad87a3a340fa7f3bed189293fbfa7a9b7e021ae1"
 
 [[projects]]
-  digest = "1:8029e9743749d4be5bc9f7d42ea1659471767860f0cdc34d37c3111bd308a295"
+  digest = "0:"
   name = "golang.org/x/text"
   packages = [
+    "collate",
+    "collate/build",
+    "internal/colltab",
     "internal/gen",
+    "internal/tag",
     "internal/triegen",
     "internal/ucd",
+    "language",
+    "secure/bidirule",
     "transform",
+    "unicode/bidi",
     "unicode/cldr",
     "unicode/norm",
+    "unicode/rangetable",
   ]
   pruneopts = "UT"
   revision = "f21a4dfb5e38f5895301dc265a8def02365cc3d0"
   version = "v0.3.0"
+
+[[projects]]
+  branch = "master"
+  digest = "0:"
+  name = "google.golang.org/genproto"
+  packages = [
+    "googleapis/api/annotations",
+    "googleapis/api/httpbody",
+    "googleapis/rpc/status",
+    "protobuf/field_mask",
+  ]
+  pruneopts = "UT"
+  revision = "d831d65fe17df2e52bcc4316d4a9f7a418701f43"
+
+[[projects]]
+  digest = "0:"
+  name = "google.golang.org/grpc"
+  packages = [
+    ".",
+    "balancer",
+    "balancer/base",
+    "balancer/roundrobin",
+    "binarylog/grpc_binarylog_v1",
+    "codes",
+    "connectivity",
+    "credentials",
+    "credentials/internal",
+    "encoding",
+    "encoding/proto",
+    "grpclog",
+    "internal",
+    "internal/backoff",
+    "internal/binarylog",
+    "internal/channelz",
+    "internal/envconfig",
+    "internal/grpcrand",
+    "internal/grpcsync",
+    "internal/syscall",
+    "internal/transport",
+    "keepalive",
+    "metadata",
+    "naming",
+    "peer",
+    "resolver",
+    "resolver/dns",
+    "resolver/passthrough",
+    "stats",
+    "status",
+    "tap",
+  ]
+  pruneopts = "UT"
+  revision = "3507fb8e1a5ad030303c106fef3a47c9fdad16ad"
+  version = "v1.19.1"
+
+[[projects]]
+  branch = "v2"
+  digest = "0:"
+  name = "gopkg.in/mgo.v2"
+  packages = [
+    "bson",
+    "internal/json",
+  ]
+  pruneopts = "UT"
+  revision = "9856a29383ce1c59f308dd1cf0363a79b5bef6b5"
 
 [[projects]]
   digest = "1:342378ac4dcb378a5448dd723f0784ae519383532f5e70ade24132c4c8693202"
@@ -800,10 +948,13 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/GeertJohan/go-sourcepath",
     "github.com/Unknwon/com",
     "github.com/k0kubun/pp",
     "github.com/pkg/errors",
     "github.com/rai-project/config",
+    "github.com/rai-project/dlframework",
+    "github.com/rai-project/dlframework/framework/feature",
     "github.com/rai-project/downloadmanager",
     "github.com/rai-project/image",
     "github.com/rai-project/image/types",
@@ -814,6 +965,8 @@
     "github.com/sirupsen/logrus",
     "github.com/spf13/cast",
     "github.com/stretchr/testify/assert",
+    "github.com/ubccr/terf",
+    "github.com/ubccr/terf/protobuf",
     "github.com/unixpickle/mnist",
     "golang.org/x/sync/errgroup",
     "golang.org/x/sync/syncmap",
