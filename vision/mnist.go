@@ -44,6 +44,11 @@ func (l MNISTLabeledImage) Feature() *dlframework.Feature {
 	)
 }
 
+// Features ...
+func (l MNISTLabeledImage) Features() dlframework.Features {
+	return dlframework.Features([]*dlframework.Feature{l.Feature()})
+}
+
 // Data ...
 func (l MNISTLabeledImage) Data() (interface{}, error) {
 	return l.data, nil

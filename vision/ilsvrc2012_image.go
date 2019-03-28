@@ -28,3 +28,8 @@ func (d *ILSVRC2012ValidationLabeledImage) Feature() *dlframework.Feature {
 		feature.ClassificationLabel(d.Label()),
 	)
 }
+
+// Features ...
+func (l ILSVRC2012ValidationLabeledImage) Features() dlframework.Features {
+	return dlframework.Features([]*dlframework.Feature{l.Feature()})
+}

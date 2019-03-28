@@ -76,6 +76,11 @@ func (l CIFAR100LabeledImage) Feature() *dlframework.Feature {
 	)
 }
 
+// Features ...
+func (l CIFAR100LabeledImage) Features() dlframework.Features {
+	return dlframework.Features([]*dlframework.Feature{l.Feature()})
+}
+
 // Data ...
 func (l CIFAR100LabeledImage) Data() (interface{}, error) {
 	return l.data, nil

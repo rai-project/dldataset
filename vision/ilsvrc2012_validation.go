@@ -60,6 +60,11 @@ func (d *iLSVRC2012ValidationRecordIOLabeledData) Feature() *dlframework.Feature
 	)
 }
 
+// Features ...
+func (l iLSVRC2012ValidationRecordIOLabeledData) Features() dlframework.Features {
+	return dlframework.Features([]*dlframework.Feature{l.Feature()})
+}
+
 func (d *iLSVRC2012ValidationRecordIOLabeledData) Data() (interface{}, error) {
 	return d.Image, nil
 }
