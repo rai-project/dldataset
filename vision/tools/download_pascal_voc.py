@@ -13,7 +13,7 @@ def parse_args():
         description='Initialize PASCAL VOC dataset.',
         epilog='Example: python pascal_voc.py --download-dir ~/VOCdevkit',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--download-dir', type=str, default='~/VOCdevkit/', help='dataset directory on disk')
+    parser.add_argument('--download-dir', type=str, default=_TARGET_DIR, help='dataset directory on disk')
     parser.add_argument('--no-download', action='store_true', help='disable automatic download if set')
     parser.add_argument('--overwrite', action='store_true', help='overwrite downloaded files if set, in case they are corrupted')
     args = parser.parse_args()
@@ -85,6 +85,3 @@ if __name__ == '__main__':
 
     # make symlink
     makedirs(os.path.expanduser('~/data/voc'))
-    if os.path.isdir(_TARGET_DIR):
-        os.remove(_TARGET_DIR)
-    os.symlink(path, _TARGET_DIR)

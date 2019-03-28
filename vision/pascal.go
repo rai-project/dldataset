@@ -224,8 +224,8 @@ func init() {
 			},
 			name:           "Pascal2007",
 			baseURL:        baseURLPrefix + "/pascal2007",
-			recordFileName: "Pascal_val.record-00000-of-00001",
-			md5sum:         "b1f63512f72d3c84792a1f53ec40062a",
+			recordFileName: "validation.tfrecord",
+			md5sum:         "e646ecf0bf838fa39d34e58d87c3e914",
 		}
 
 		Pascal2012ValidationTFRecord = &PascalValidationTFRecord{
@@ -235,8 +235,8 @@ func init() {
 			},
 			name:           "Pascal2012",
 			baseURL:        baseURLPrefix + "/pascal2012",
-			recordFileName: "Pascal_val.record-00000-of-00001",
-			md5sum:         "b8a0cfed5ad569d4572b4ad8645acb5b",
+			recordFileName: "validation.tfrecord",
+			md5sum:         "9a59d26492103b8635ba0c916d68535a",
 		}
 
 		dldataset.Register(Pascal2007ValidationTFRecord)
