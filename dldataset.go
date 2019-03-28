@@ -4,11 +4,14 @@ import (
 	"io"
 
 	context "context"
+
+	"github.com/rai-project/dlframework"
 )
 
 // LabeledData ...
 type LabeledData interface {
 	Label() string
+	Feature() *dlframework.Feature
 	Data() (interface{}, error)
 }
 
