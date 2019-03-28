@@ -12,13 +12,16 @@ import (
 	"github.com/rai-project/image"
 	"github.com/rai-project/image/types"
 	"github.com/ubccr/terf"
+	protobuf "github.com/ubccr/terf/protobuf"
 )
 
+// TFRecordReader ...
 type TFRecordReader struct {
 	r io.ReadCloser
 	*terf.Reader
 }
 
+// NewTFRecordReader ...
 func NewTFRecordReader(path string) (*TFRecordReader, error) {
 	r, err := os.Open(path)
 	if err != nil {
@@ -30,6 +33,16 @@ func NewTFRecordReader(path string) (*TFRecordReader, error) {
 	}, nil
 }
 
+// NextRecord ...
+func (r *TFRecordReader) NextRecord(ctx context.Context) (*protobuf.Example, error) {
+	nxt, err := r.Reader.Next()
+	if err != nil {
+		return nil, err
+	}
+	return nxt, nil
+}
+
+// Next ...
 func (r *TFRecordReader) Next(ctx context.Context) (*ImageRecord, error) {
 	nxt, err := r.Reader.Next()
 	if err != nil {
@@ -82,6 +95,7 @@ func (r *TFRecordReader) Next(ctx context.Context) (*ImageRecord, error) {
 	}, nil
 }
 
+// Close ...
 func (r *TFRecordReader) Close() error {
 	return r.r.Close()
 }

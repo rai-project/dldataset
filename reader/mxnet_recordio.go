@@ -32,6 +32,7 @@ func NewRecordIOReader(path string) (*RecordIOReader, error) {
 	}, nil
 }
 
+// Next ...
 func (r *RecordIOReader) Next(ctx context.Context) (*ImageRecord, error) {
 	f := r.r
 

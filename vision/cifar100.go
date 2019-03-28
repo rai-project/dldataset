@@ -12,10 +12,13 @@ import (
 	"strings"
 
 	context "context"
+
 	"github.com/Unknwon/com"
 	"github.com/pkg/errors"
 	"github.com/rai-project/config"
 	"github.com/rai-project/dldataset"
+	"github.com/rai-project/dlframework"
+	"github.com/rai-project/dlframework/framework/feature"
 	"github.com/rai-project/downloadmanager"
 	"github.com/rai-project/image/types"
 	"github.com/rai-project/utils"
@@ -64,6 +67,18 @@ func (l CIFAR100LabeledImage) FineLabel() string {
 // Label ...
 func (l CIFAR100LabeledImage) Label() string {
 	return l.FineLabel()
+}
+
+// Feature ...
+func (l CIFAR100LabeledImage) Feature() *dlframework.Feature {
+	return feature.New(
+		feature.ClassificationLabel(l.fineLabel),
+	)
+}
+
+// Features ...
+func (l CIFAR100LabeledImage) Features() dlframework.Features {
+	return dlframework.Features([]*dlframework.Feature{l.Feature()})
 }
 
 // Data ...

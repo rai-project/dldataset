@@ -13,6 +13,8 @@ import (
 	"github.com/rai-project/config"
 	"github.com/rai-project/dldataset"
 	"github.com/rai-project/dldataset/reader"
+	"github.com/rai-project/dlframework"
+	"github.com/rai-project/dlframework/framework/feature"
 	"github.com/rai-project/downloadmanager"
 	"github.com/spf13/cast"
 	"golang.org/x/sync/errgroup"
@@ -48,6 +50,19 @@ type recordIoOffset struct {
 
 func (d *iLSVRC2012ValidationRecordIOLabeledData) Label() string {
 	return synset[int(d.LabelIndex)]
+}
+
+// Feature ...
+func (d *iLSVRC2012ValidationRecordIOLabeledData) Feature() *dlframework.Feature {
+	return feature.New(
+		feature.ClassificationIndex(int32(d.LabelIndex)),
+		feature.ClassificationLabel(d.Label()),
+	)
+}
+
+// Features ...
+func (l iLSVRC2012ValidationRecordIOLabeledData) Features() dlframework.Features {
+	return dlframework.Features([]*dlframework.Feature{l.Feature()})
 }
 
 func (d *iLSVRC2012ValidationRecordIOLabeledData) Data() (interface{}, error) {
