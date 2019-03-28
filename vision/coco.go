@@ -34,6 +34,7 @@ type CocoLabeledImage struct {
 	data     *types.RGBImage
 }
 
+// CocoValidationTFRecord ...
 type CocoValidationTFRecord struct {
 	base
 	name           string
@@ -68,6 +69,7 @@ func (d *CocoLabeledImage) Features() dlframework.Features {
 	return d.features
 }
 
+// Close ...
 func (d *CocoValidationTFRecord) Close() error {
 	if d.recordReader != nil {
 		d.recordReader.Close()
@@ -75,10 +77,12 @@ func (d *CocoValidationTFRecord) Close() error {
 	return nil
 }
 
+// Name ...
 func (d *CocoValidationTFRecord) Name() string {
 	return d.name
 }
 
+// CanonicalName ...
 func (d *CocoValidationTFRecord) CanonicalName() string {
 	category := strings.ToLower(d.Category())
 	name := strings.ToLower(d.Name())
@@ -92,6 +96,7 @@ func (d *CocoValidationTFRecord) workingDir() string {
 	return filepath.Join(d.baseWorkingDir, category, name)
 }
 
+// Download ...
 func (d *CocoValidationTFRecord) Download(ctx context.Context) error {
 	workingDir := d.workingDir()
 	fileName := d.recordFileName
@@ -110,14 +115,17 @@ func (d *CocoValidationTFRecord) Download(ctx context.Context) error {
 	return nil
 }
 
+// New ...
 func (d *CocoValidationTFRecord) New(ctx context.Context) (dldataset.Dataset, error) {
 	return nil, nil
 }
 
+// Get ...
 func (d *CocoValidationTFRecord) Get(ctx context.Context, name string) (dldataset.LabeledData, error) {
 	return nil, errors.New("get is not implemented for " + d.CanonicalName())
 }
 
+// List ...
 func (d *CocoValidationTFRecord) List(ctx context.Context) ([]string, error) {
 	return nil, errors.New("list is not implemented for " + d.CanonicalName())
 }
@@ -137,6 +145,7 @@ func (d *CocoValidationTFRecord) loadRecord(ctx context.Context) error {
 	return nil
 }
 
+// Load ...
 func (d *CocoValidationTFRecord) Load(ctx context.Context) error {
 	return d.loadRecord(ctx)
 }

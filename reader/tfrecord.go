@@ -92,6 +92,7 @@ func (r *TFRecordReader) Next(ctx context.Context) (*ImageRecord, error) {
 	}, nil
 }
 
+// Close ...
 func (r *TFRecordReader) Close() error {
 	return r.r.Close()
 }

@@ -1,5 +1,6 @@
 package vision
 
+// CityScapeClass ...
 type CityScapeClass struct {
 	Name         string
 	ID           int64
@@ -11,6 +12,7 @@ type CityScapeClass struct {
 	Color        []uint8
 }
 
+// CityScapeClasses ...
 var CityScapeClasses []CityScapeClass
 
 func init() {
