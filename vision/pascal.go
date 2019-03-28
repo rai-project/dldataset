@@ -2,6 +2,7 @@ package vision
 
 import (
 	context "context"
+	"fmt"
 	"path"
 	"path/filepath"
 	"strings"
@@ -12,6 +13,7 @@ import (
 	"github.com/rai-project/dldataset"
 	"github.com/rai-project/dldataset/reader"
 	"github.com/rai-project/dldataset/reader/tfrecord"
+	"github.com/rai-project/dldataset/vision/support/object_detection"
 	"github.com/rai-project/dlframework"
 	"github.com/rai-project/dlframework/framework/feature"
 	"github.com/rai-project/downloadmanager"
@@ -40,6 +42,7 @@ type PascalValidationTFRecord struct {
 	baseURL        string
 	recordFileName string
 	md5sum         string
+	labelMap       object_detection.StringIntLabelMap
 	recordReader   *reader.TFRecordReader
 }
 
@@ -216,6 +219,11 @@ func init() {
 
 		const baseURLPrefix = "https://s3.amazonaws.com/store.carml.org/datasets"
 
+		labelMap, err := object_detection.Get("pascal_label_map.pbtxt")
+		if err != nil {
+			panic(fmt.Sprintf("failed to get pascal_label_map.pbtxt due to %v", err))
+		}
+
 		baseWorkingDir := filepath.Join(dldataset.Config.WorkingDirectory, "dldataset")
 		Pascal2007ValidationTFRecord = &PascalValidationTFRecord{
 			base: base{
@@ -223,6 +231,7 @@ func init() {
 				baseWorkingDir: baseWorkingDir,
 			},
 			name:           "Pascal2007",
+			labelMap:       labelMap,
 			baseURL:        baseURLPrefix + "/pascal2007",
 			recordFileName: "validation.tfrecord",
 			md5sum:         "e646ecf0bf838fa39d34e58d87c3e914",
@@ -234,6 +243,7 @@ func init() {
 				baseWorkingDir: baseWorkingDir,
 			},
 			name:           "Pascal2012",
+			labelMap:       labelMap,
 			baseURL:        baseURLPrefix + "/pascal2012",
 			recordFileName: "validation.tfrecord",
 			md5sum:         "9a59d26492103b8635ba0c916d68535a",

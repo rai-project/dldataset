@@ -2,9 +2,12 @@ package vision
 
 import (
 	context "context"
+	"fmt"
 	"path"
 	"path/filepath"
 	"strings"
+
+	"github.com/rai-project/dldataset/vision/support/object_detection"
 
 	"github.com/Unknwon/com"
 	"github.com/pkg/errors"
@@ -35,11 +38,13 @@ type CocoLabeledImage struct {
 // CocoValidationTFRecord ...
 type CocoValidationTFRecord struct {
 	base
-	name           string
-	baseURL        string
-	recordFileName string
-	md5sum         string
-	recordReader   *reader.TFRecordReader
+	name             string
+	baseURL          string
+	recordFileName   string
+	md5sum           string
+	labelMap         object_detection.StringIntLabelMap
+	completeLabelMap object_detection.StringIntLabelMap
+	recordReader     *reader.TFRecordReader
 }
 
 var (
@@ -210,16 +215,28 @@ func init() {
 
 		const baseURLPrefix = "https://s3.amazonaws.com/store.carml.org/datasets"
 
+		labelMap, err := object_detection.Get("mscoco_label_map.pbtxt")
+		if err != nil {
+			panic(fmt.Sprintf("failed to get mscoco_label_map.pbtxt due to %v", err))
+		}
+
+		completeLabelMap, err := object_detection.Get("mscoco_complete_label_map.pbtxt")
+		if err != nil {
+			panic(fmt.Sprintf("failed to get mscoco_complete_label_map.pbtxt due to %v", err))
+		}
+
 		baseWorkingDir := filepath.Join(dldataset.Config.WorkingDirectory, "dldataset")
 		coco2014ValidationTFRecord = &CocoValidationTFRecord{
 			base: base{
 				ctx:            context.Background(),
 				baseWorkingDir: baseWorkingDir,
 			},
-			name:           "coco2014",
-			baseURL:        baseURLPrefix + "/coco2014",
-			recordFileName: "coco_val.record-00000-of-00001",
-			md5sum:         "b1f63512f72d3c84792a1f53ec40062a",
+			name:             "coco2014",
+			baseURL:          baseURLPrefix + "/coco2014",
+			labelMap:         labelMap,
+			completeLabelMap: completeLabelMap,
+			recordFileName:   "coco_val.record-00000-of-00001",
+			md5sum:           "b1f63512f72d3c84792a1f53ec40062a",
 		}
 
 		coco2017ValidationTFRecord = &CocoValidationTFRecord{
@@ -227,10 +244,12 @@ func init() {
 				ctx:            context.Background(),
 				baseWorkingDir: baseWorkingDir,
 			},
-			name:           "coco2017",
-			baseURL:        baseURLPrefix + "/coco2017",
-			recordFileName: "coco_val.record-00000-of-00001",
-			md5sum:         "b8a0cfed5ad569d4572b4ad8645acb5b",
+			name:             "coco2017",
+			baseURL:          baseURLPrefix + "/coco2017",
+			labelMap:         labelMap,
+			completeLabelMap: completeLabelMap,
+			recordFileName:   "coco_val.record-00000-of-00001",
+			md5sum:           "b8a0cfed5ad569d4572b4ad8645acb5b",
 		}
 
 		dldataset.Register(coco2014ValidationTFRecord)
