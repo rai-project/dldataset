@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	context "context"
+
 	"github.com/Unknwon/com"
 	"github.com/pkg/errors"
 	"github.com/rai-project/config"
@@ -37,7 +38,7 @@ type ILSVRC2012ValidationRecordIO struct {
 }
 
 type iLSVRC2012ValidationRecordIOLabeledData struct {
-	*reader.Record
+	*reader.ImageRecord
 }
 
 type recordIoOffset struct {
@@ -189,7 +190,7 @@ func (d *ILSVRC2012ValidationRecordIO) Next(ctx context.Context) (dldataset.Labe
 	}
 
 	return &iLSVRC2012ValidationRecordIOLabeledData{
-		Record: rec,
+		ImageRecord: rec,
 	}, nil
 }
 
