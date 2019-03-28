@@ -9,6 +9,7 @@ func FeatureBool(rec *protobuf.Example, key string) bool {
 	return FeatureInt(rec, key) == 1
 }
 
+// FeatureInt64 ...
 func FeatureInt64(rec *protobuf.Example, key string) int64 {
 	f, ok := rec.Features.Feature[key]
 	if !ok {
@@ -35,6 +36,7 @@ func FeatureFloat64(rec *protobuf.Example, key string) float64 {
 	return float64(FeatureFloat32(rec, key))
 }
 
+// FeatureFloat32 ...
 func FeatureFloat32(rec *protobuf.Example, key string) float32 {
 	f, ok := rec.Features.Feature[key]
 	if !ok {
@@ -71,6 +73,7 @@ func FeatureBytesSlice(rec *protobuf.Example, key string) [][]byte {
 	return val.BytesList.Value
 }
 
+// FeatureStringSlice ...
 func FeatureStringSlice(rec *protobuf.Example, key string) []string {
 	slice := FeatureBytesSlice(rec, key)
 	if slice == nil {
@@ -100,6 +103,7 @@ func FeatureInt64Slice(rec *protobuf.Example, key string) []int64 {
 	return val.Int64List.Value
 }
 
+// FeatureIntSlice ...
 func FeatureIntSlice(rec *protobuf.Example, key string) []int {
 	slice := FeatureInt64Slice(rec, key)
 	if slice == nil {
@@ -142,6 +146,7 @@ func FeatureFloat64Slice(rec *protobuf.Example, key string) []float64 {
 	return res
 }
 
+// FeatureFloat32Slice ...
 func FeatureFloat32Slice(rec *protobuf.Example, key string) []float32 {
 	f, ok := rec.Features.Feature[key]
 	if !ok {

@@ -20,6 +20,7 @@ type TFRecordReader struct {
 	*terf.Reader
 }
 
+// NewTFRecordReader ...
 func NewTFRecordReader(path string) (*TFRecordReader, error) {
 	r, err := os.Open(path)
 	if err != nil {
