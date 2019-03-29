@@ -42,8 +42,8 @@ type CocoValidationTFRecord struct {
 	baseURL          string
 	recordFileName   string
 	md5sum           string
-	labelMap         object_detection.StringIntLabelMap
-	completeLabelMap object_detection.StringIntLabelMap
+	labelMap         *object_detection.StringIntLabelMap
+	completeLabelMap *object_detection.StringIntLabelMap
 	recordReader     *reader.TFRecordReader
 }
 
