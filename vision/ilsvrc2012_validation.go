@@ -25,6 +25,10 @@ var (
 	iLSVRC2012Validation224RecordIO *ILSVRC2012ValidationRecordIO
 	iLSVRC2012Validation227RecordIO *ILSVRC2012ValidationRecordIO
 	iLSVRC2012Validation299RecordIO *ILSVRC2012ValidationRecordIO
+
+	iLSVRC2012Validation224CenterCrop875RecordIO *ILSVRC2012ValidationRecordIO
+	iLSVRC2012Validation227CenterCrop875RecordIO *ILSVRC2012ValidationRecordIO
+	iLSVRC2012Validation299CenterCrop875RecordIO *ILSVRC2012ValidationRecordIO
 )
 
 // ILSVRC2012ValidationFolder ...
