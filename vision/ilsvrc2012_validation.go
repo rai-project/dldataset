@@ -1,6 +1,7 @@
 package vision
 
 import (
+	"fmt"
 	"io/ioutil"
 	"path"
 	"path/filepath"
@@ -41,6 +42,7 @@ type ILSVRC2012ValidationRecordIO struct {
 	recordFileName    string
 	recordReader      *reader.RecordIOReader
 	fileOffsetMapping map[string]recordIoOffset
+	centerCrop        float64
 }
 
 type iLSVRC2012ValidationRecordIOLabeledData struct {
@@ -80,7 +82,11 @@ func (d *ILSVRC2012ValidationRecordIO) Name() string {
 	if d.imageSize == 0 {
 		return "ilsvrc2012_validation"
 	}
-	return "ilsvrc2012_validation_" + cast.ToString(d.imageSize)
+	name := "ilsvrc2012_validation_" + cast.ToString(d.imageSize)
+	if d.centerCrop == 0 {
+		return name
+	}
+	return fmt.Sprintf("%s_center_crop_%d", 10*d.centerCrop)
 }
 
 func (d *ILSVRC2012ValidationRecordIO) CanonicalName() string {
@@ -281,6 +287,7 @@ func init() {
 			listFileName:   "imagenet1k-val.lst",
 			indexFileName:  "imagenet1k-val.idx",
 			recordFileName: "imagenet1k-val.rec",
+			centerCrop:     87.5,
 		}
 
 		iLSVRC2012Validation227CenterCrop875RecordIO = &ILSVRC2012ValidationRecordIO{
@@ -293,6 +300,7 @@ func init() {
 			listFileName:   "imagenet1k-val.lst",
 			indexFileName:  "imagenet1k-val.idx",
 			recordFileName: "imagenet1k-val.rec",
+			centerCrop:     87.5,
 		}
 		iLSVRC2012Validation299CenterCrop875RecordIO = &ILSVRC2012ValidationRecordIO{
 			base: base{
@@ -304,6 +312,7 @@ func init() {
 			listFileName:   "imagenet1k-val.lst",
 			indexFileName:  "imagenet1k-val.idx",
 			recordFileName: "imagenet1k-val.rec",
+			centerCrop:     87.5,
 		}
 		dldataset.Register(iLSVRC2012ValidationRecordIO)
 		dldataset.Register(iLSVRC2012Validation224RecordIO)
