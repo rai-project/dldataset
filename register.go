@@ -34,6 +34,7 @@ func Get(category, name string) (Dataset, error) {
 
 // Register ...
 func Register(d Dataset) {
+  pp.Println(d.CanonicalName())
 	datasets.Store(d.CanonicalName(), d)
 }
 
