@@ -120,6 +120,13 @@ func (d *ILSVRC2012ValidationRecordIO) CanonicalName() string {
 	return key
 }
 
+func (d *ILSVRC2012TestRecordIO) CanonicalName() string {
+	category := strings.ToLower(d.Category())
+	name := strings.ToLower(d.Name())
+	key := path.Join(category, name)
+	return key
+}
+
 func (d *ILSVRC2012ValidationRecordIO) workingDir() string {
 	category := strings.ToLower(d.Category())
 	name := strings.ToLower(d.Name())
@@ -433,7 +440,6 @@ func init() {
 			},
 		}
 
-		dldataset.Register(iLSVRC2012TestRecordIO)
 		dldataset.Register(iLSVRC2012Test224RecordIO)
 		dldataset.Register(iLSVRC2012Test227RecordIO)
 		dldataset.Register(iLSVRC2012Test299RecordIO)

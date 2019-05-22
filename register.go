@@ -5,8 +5,6 @@ import (
 	"path"
 	"strings"
 
-	"github.com/k0kubun/pp"
-
 	"golang.org/x/sync/syncmap"
 )
 
@@ -36,7 +34,9 @@ func Get(category, name string) (Dataset, error) {
 
 // Register ...
 func Register(d Dataset) {
-	pp.Println(d.CanonicalName())
+	if d == nil {
+		return
+	}
 	datasets.Store(d.CanonicalName(), d)
 }
 
