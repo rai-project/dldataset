@@ -86,7 +86,7 @@ func (d *ILSVRC2012ValidationRecordIO) Name() string {
 	if d.centerCrop == 0 {
 		return name
 	}
-	return fmt.Sprintf("%s_center_crop_%d", 10*d.centerCrop)
+	return fmt.Sprintf("%s_center_crop_%d", name, 10*d.centerCrop)
 }
 
 func (d *ILSVRC2012ValidationRecordIO) CanonicalName() string {
