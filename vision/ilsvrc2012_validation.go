@@ -10,6 +10,7 @@ import (
 	context "context"
 
 	"github.com/Unknwon/com"
+	"github.com/k0kubun/pp"
 	"github.com/pkg/errors"
 	"github.com/rai-project/config"
 	"github.com/rai-project/dldataset"
@@ -31,14 +32,14 @@ var (
 	iLSVRC2012Validation227CenterCrop875RecordIO *ILSVRC2012ValidationRecordIO
 	iLSVRC2012Validation299CenterCrop875RecordIO *ILSVRC2012ValidationRecordIO
 
-	iLSVRC2012TestRecordIO    *ILSVRC2012TestRecordIO
-	iLSVRC2012Test224RecordIO *ILSVRC2012TestRecordIO
-	iLSVRC2012Test227RecordIO *ILSVRC2012TestRecordIO
-	iLSVRC2012Test299RecordIO *ILSVRC2012TestRecordIO
+	iLSVRC2012TestRecordIO    *ILSVRC2012ValidationRecordIO
+	iLSVRC2012Test224RecordIO *ILSVRC2012ValidationRecordIO
+	iLSVRC2012Test227RecordIO *ILSVRC2012ValidationRecordIO
+	iLSVRC2012Test299RecordIO *ILSVRC2012ValidationRecordIO
 
-	iLSVRC2012Test224CenterCrop875RecordIO *ILSVRC2012TestRecordIO
-	iLSVRC2012Test227CenterCrop875RecordIO *ILSVRC2012TestRecordIO
-	iLSVRC2012Test299CenterCrop875RecordIO *ILSVRC2012TestRecordIO
+	iLSVRC2012Test224CenterCrop875RecordIO *ILSVRC2012ValidationRecordIO
+	iLSVRC2012Test227CenterCrop875RecordIO *ILSVRC2012ValidationRecordIO
+	iLSVRC2012Test299CenterCrop875RecordIO *ILSVRC2012ValidationRecordIO
 )
 
 // ILSVRC2012ValidationFolder ...
@@ -52,10 +53,7 @@ type ILSVRC2012ValidationRecordIO struct {
 	recordReader      *reader.RecordIOReader
 	fileOffsetMapping map[string]recordIoOffset
 	centerCrop        float64
-}
-
-type ILSVRC2012TestRecordIO struct {
-	ILSVRC2012ValidationRecordIO
+	isTestSet         bool
 }
 
 type iLSVRC2012ValidationRecordIOLabeledData struct {
@@ -92,21 +90,14 @@ func (d *ILSVRC2012ValidationRecordIO) New(ctx context.Context) (dldataset.Datas
 	return nil, nil
 }
 func (d *ILSVRC2012ValidationRecordIO) Name() string {
+	ty := "validation"
+	if d.isTestSet {
+		ty = "test"
+	}
 	if d.imageSize == 0 {
-		return "ilsvrc2012_validation"
+		return "ilsvrc2012_" + ty
 	}
-	name := "ilsvrc2012_validation_" + cast.ToString(d.imageSize)
-	if d.centerCrop == 0 {
-		return name
-	}
-	return fmt.Sprintf("%s_center_crop_%d", name, int(10*d.centerCrop))
-}
-
-func (d *ILSVRC2012TestRecordIO) Name() string {
-	if d.imageSize == 0 {
-		return "ilsvrc2012_test"
-	}
-	name := "ilsvrc2012_test_" + cast.ToString(d.imageSize)
+	name := "ilsvrc2012_" + ty + "_" + cast.ToString(d.imageSize)
 	if d.centerCrop == 0 {
 		return name
 	}
@@ -114,13 +105,6 @@ func (d *ILSVRC2012TestRecordIO) Name() string {
 }
 
 func (d *ILSVRC2012ValidationRecordIO) CanonicalName() string {
-	category := strings.ToLower(d.Category())
-	name := strings.ToLower(d.Name())
-	key := path.Join(category, name)
-	return key
-}
-
-func (d *ILSVRC2012TestRecordIO) CanonicalName() string {
 	category := strings.ToLower(d.Category())
 	name := strings.ToLower(d.Name())
 	key := path.Join(category, name)
@@ -144,6 +128,7 @@ func (d *ILSVRC2012ValidationRecordIO) Download(ctx context.Context) error {
 			if com.IsFile(downloadedFileName) {
 				return nil
 			}
+			pp.Println(downloadedFileName)
 			downloadedFileName, err := downloadmanager.DownloadFile(
 				urlJoin(d.baseURL, fileName),
 				downloadedFileName,
@@ -185,6 +170,7 @@ func (d *ILSVRC2012ValidationRecordIO) populate(ctx context.Context) ([]string, 
 		return nil, errors.Errorf("unable to find the list file in %v make sure to download the dataset first", listFileName)
 	}
 
+	pp.Println(listFileName)
 	bts, err := ioutil.ReadFile(listFileName)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to read %v", listFileName)
@@ -355,89 +341,83 @@ func init() {
 		dldataset.Register(iLSVRC2012Validation227CenterCrop875RecordIO)
 		dldataset.Register(iLSVRC2012Validation299CenterCrop875RecordIO)
 
-		iLSVRC2012Test224RecordIO = &ILSVRC2012TestRecordIO{
-			ILSVRC2012ValidationRecordIO: ILSVRC2012ValidationRecordIO{
-				base: base{
-					ctx:            context.Background(),
-					baseWorkingDir: filepath.Join(dldataset.Config.WorkingDirectory, "dldataset"),
-				},
-				imageSize:      224,
-				baseURL:        "https://s3.amazonaws.com/store.carml.org/datasets/ILSVRC2012_img_test_224_center_crop_875",
-				listFileName:   "imagenet1k-val.lst",
-				indexFileName:  "imagenet1k-val.idx",
-				recordFileName: "imagenet1k-val.rec",
+		iLSVRC2012Test224RecordIO = &ILSVRC2012ValidationRecordIO{
+			base: base{
+				ctx:            context.Background(),
+				baseWorkingDir: filepath.Join(dldataset.Config.WorkingDirectory, "dldataset"),
 			},
+			imageSize:      224,
+			baseURL:        "https://s3.amazonaws.com/store.carml.org/datasets/ILSVRC2012_img_test_224_center_crop_875",
+			listFileName:   "imagenet1k-test.lst",
+			indexFileName:  "imagenet1k-test.idx",
+			recordFileName: "imagenet1k-test.rec",
+			isTestSet:      true,
 		}
 
-		iLSVRC2012Test227RecordIO = &ILSVRC2012TestRecordIO{
-			ILSVRC2012ValidationRecordIO: ILSVRC2012ValidationRecordIO{
-				base: base{
-					ctx:            context.Background(),
-					baseWorkingDir: filepath.Join(dldataset.Config.WorkingDirectory, "dldataset"),
-				},
-				imageSize:      227,
-				baseURL:        "https://s3.amazonaws.com/store.carml.org/datasets/ILSVRC2012_img_test_227_center_crop_875",
-				listFileName:   "imagenet1k-val.lst",
-				indexFileName:  "imagenet1k-val.idx",
-				recordFileName: "imagenet1k-val.rec",
+		iLSVRC2012Test227RecordIO = &ILSVRC2012ValidationRecordIO{
+			base: base{
+				ctx:            context.Background(),
+				baseWorkingDir: filepath.Join(dldataset.Config.WorkingDirectory, "dldataset"),
 			},
+			imageSize:      227,
+			baseURL:        "https://s3.amazonaws.com/store.carml.org/datasets/ILSVRC2012_img_test_227_center_crop_875",
+			listFileName:   "imagenet1k-test.lst",
+			indexFileName:  "imagenet1k-test.idx",
+			recordFileName: "imagenet1k-test.rec",
+			isTestSet:      true,
 		}
-		iLSVRC2012Test299RecordIO = &ILSVRC2012TestRecordIO{
-			ILSVRC2012ValidationRecordIO: ILSVRC2012ValidationRecordIO{
-				base: base{
-					ctx:            context.Background(),
-					baseWorkingDir: filepath.Join(dldataset.Config.WorkingDirectory, "dldataset"),
-				},
-				imageSize:      299,
-				baseURL:        "https://s3.amazonaws.com/store.carml.org/datasets/ILSVRC2012_img_test_299_center_crop_875",
-				listFileName:   "imagenet1k-val.lst",
-				indexFileName:  "imagenet1k-val.idx",
-				recordFileName: "imagenet1k-val.rec",
+		iLSVRC2012Test299RecordIO = &ILSVRC2012ValidationRecordIO{
+			base: base{
+				ctx:            context.Background(),
+				baseWorkingDir: filepath.Join(dldataset.Config.WorkingDirectory, "dldataset"),
 			},
+			imageSize:      299,
+			baseURL:        "https://s3.amazonaws.com/store.carml.org/datasets/ILSVRC2012_img_test_299_center_crop_875",
+			listFileName:   "imagenet1k-test.lst",
+			indexFileName:  "imagenet1k-test.idx",
+			recordFileName: "imagenet1k-test.rec",
+			isTestSet:      true,
 		}
 
-		iLSVRC2012Test224CenterCrop875RecordIO = &ILSVRC2012TestRecordIO{
-			ILSVRC2012ValidationRecordIO: ILSVRC2012ValidationRecordIO{
-				base: base{
-					ctx:            context.Background(),
-					baseWorkingDir: filepath.Join(dldataset.Config.WorkingDirectory, "dldataset"),
-				},
-				imageSize:      224,
-				baseURL:        "https://s3.amazonaws.com/store.carml.org/datasets/ILSVRC2012_img_test_224_center_crop_875",
-				listFileName:   "imagenet1k-val.lst",
-				indexFileName:  "imagenet1k-val.idx",
-				recordFileName: "imagenet1k-val.rec",
-				centerCrop:     87.5,
+		iLSVRC2012Test224CenterCrop875RecordIO = &ILSVRC2012ValidationRecordIO{
+			base: base{
+				ctx:            context.Background(),
+				baseWorkingDir: filepath.Join(dldataset.Config.WorkingDirectory, "dldataset"),
 			},
+			imageSize:      224,
+			baseURL:        "https://s3.amazonaws.com/store.carml.org/datasets/ILSVRC2012_img_test_224_center_crop_875",
+			listFileName:   "imagenet1k-test.lst",
+			indexFileName:  "imagenet1k-test.idx",
+			recordFileName: "imagenet1k-test.rec",
+			centerCrop:     87.5,
+			isTestSet:      true,
 		}
 
-		iLSVRC2012Test227CenterCrop875RecordIO = &ILSVRC2012TestRecordIO{
-			ILSVRC2012ValidationRecordIO: ILSVRC2012ValidationRecordIO{
-				base: base{
-					ctx:            context.Background(),
-					baseWorkingDir: filepath.Join(dldataset.Config.WorkingDirectory, "dldataset"),
-				},
-				imageSize:      227,
-				baseURL:        "https://s3.amazonaws.com/store.carml.org/datasets/ILSVRC2012_img_test_227_center_crop_875",
-				listFileName:   "imagenet1k-val.lst",
-				indexFileName:  "imagenet1k-val.idx",
-				recordFileName: "imagenet1k-val.rec",
-				centerCrop:     87.5,
+		iLSVRC2012Test227CenterCrop875RecordIO = &ILSVRC2012ValidationRecordIO{
+			base: base{
+				ctx:            context.Background(),
+				baseWorkingDir: filepath.Join(dldataset.Config.WorkingDirectory, "dldataset"),
 			},
+			imageSize:      227,
+			baseURL:        "https://s3.amazonaws.com/store.carml.org/datasets/ILSVRC2012_img_test_227_center_crop_875",
+			listFileName:   "imagenet1k-test.lst",
+			indexFileName:  "imagenet1k-test.idx",
+			recordFileName: "imagenet1k-test.rec",
+			centerCrop:     87.5,
+			isTestSet:      true,
 		}
-		iLSVRC2012Test299CenterCrop875RecordIO = &ILSVRC2012TestRecordIO{
-			ILSVRC2012ValidationRecordIO: ILSVRC2012ValidationRecordIO{
-				base: base{
-					ctx:            context.Background(),
-					baseWorkingDir: filepath.Join(dldataset.Config.WorkingDirectory, "dldataset"),
-				},
-				imageSize:      299,
-				baseURL:        "https://s3.amazonaws.com/store.carml.org/datasets/ILSVRC2012_img_test_299_center_crop_875",
-				listFileName:   "imagenet1k-val.lst",
-				indexFileName:  "imagenet1k-val.idx",
-				recordFileName: "imagenet1k-val.rec",
-				centerCrop:     87.5,
+		iLSVRC2012Test299CenterCrop875RecordIO = &ILSVRC2012ValidationRecordIO{
+			base: base{
+				ctx:            context.Background(),
+				baseWorkingDir: filepath.Join(dldataset.Config.WorkingDirectory, "dldataset"),
 			},
+			imageSize:      299,
+			baseURL:        "https://s3.amazonaws.com/store.carml.org/datasets/ILSVRC2012_img_test_299_center_crop_875",
+			listFileName:   "imagenet1k-test.lst",
+			indexFileName:  "imagenet1k-test.idx",
+			recordFileName: "imagenet1k-test.rec",
+			centerCrop:     87.5,
+			isTestSet:      true,
 		}
 
 		dldataset.Register(iLSVRC2012Test224RecordIO)
