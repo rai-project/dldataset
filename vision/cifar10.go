@@ -102,12 +102,14 @@ func (d *CIFAR10) Download(ctx context.Context) error {
 	}
 	workingDir := d.workingDir()
 	downloadedFileName := filepath.Join(workingDir, d.fileName)
-	downloadedFileName, err := downloadmanager.DownloadFile(d.url, downloadedFileName, downloadmanager.Context(ctx), downloadmanager.MD5Sum(d.md5sum))
+	downloadedFileName, ifDownload, err := downloadmanager.DownloadFile(d.url, downloadedFileName, downloadmanager.Context(ctx), downloadmanager.MD5Sum(d.md5sum))
 	if err != nil {
 		return err
 	}
-	if err := downloadmanager.Unarchive(workingDir, downloadedFileName); err != nil {
-		return err
+	if ifDownload {
+		if err := downloadmanager.Unarchive(workingDir, downloadedFileName); err != nil {
+			return err
+		}
 	}
 	if err := d.move(ctx); err != nil {
 		return err

@@ -129,7 +129,7 @@ func (d *ILSVRC2012ValidationRecordIO) Download(ctx context.Context) error {
 				return nil
 			}
 			pp.Println(downloadedFileName)
-			downloadedFileName, err := downloadmanager.DownloadFile(
+			downloadedFileName, _, err := downloadmanager.DownloadFile(
 				urlJoin(d.baseURL, fileName),
 				downloadedFileName,
 				downloadmanager.Context(ctx),

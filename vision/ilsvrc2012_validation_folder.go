@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	context "context"
+
 	"github.com/pkg/errors"
 	"github.com/rai-project/config"
 	"github.com/rai-project/dldataset"
@@ -103,7 +104,7 @@ func (d *ILSVRC2012ValidationFolder) Get(ctx context.Context, name string) (dlda
 
 	workingDir := d.workingDir()
 	downloadedFileName := filepath.Join(workingDir, name)
-	downloadedFileName, err := downloadmanager.DownloadFile(
+	downloadedFileName, _, err := downloadmanager.DownloadFile(
 		fileURL,
 		downloadedFileName,
 		downloadmanager.Context(ctx),

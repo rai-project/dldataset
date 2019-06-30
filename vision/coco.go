@@ -107,7 +107,7 @@ func (d *CocoValidationTFRecord) Download(ctx context.Context) error {
 	if com.IsFile(downloadedFileName) {
 		return nil
 	}
-	downloadedFileName, err := downloadmanager.DownloadFile(
+	downloadedFileName, _, err := downloadmanager.DownloadFile(
 		urlJoin(d.baseURL, fileName),
 		downloadedFileName,
 		downloadmanager.Context(ctx),
